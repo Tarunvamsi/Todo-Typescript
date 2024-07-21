@@ -1,22 +1,14 @@
-// server.ts
 import express, { Request, Response } from "express";
-import mongoose from "mongoose";
 import { Todo } from "./db";
 import * as types from "./types";
+import dotenv from "dotenv";
 
+dotenv.config();
+
+const cors = require("cors");
 const app = express();
 app.use(express.json());
-
-mongoose
-  .connect(
-    "mongodb+srv://tarunvamsipusarla:kbbLfvzRrXVDW3AY@todo-app.zic7d0j.mongodb.net/todos"
-  )
-  .then(() => {
-    console.log("Connected to MongoDB");
-  })
-  .catch((error) => {
-    console.error("Error connecting to MongoDB:", error);
-  });
+app.use(cors());
 
 app.post("/todo", async (req: Request, res: Response) => {
   const createPayload = req.body;
@@ -25,6 +17,7 @@ app.post("/todo", async (req: Request, res: Response) => {
   if (!parsedPayload.success) {
     res.status(400).json({
       msg: "Please check the given input",
+      errors: parsedPayload.error.errors,
     });
     return;
   }
@@ -55,6 +48,7 @@ app.put("/completed", async (req: Request, res: Response) => {
   if (!parsedPayload.success) {
     res.status(400).json({
       msg: "Please check the given input",
+      errors: parsedPayload.error.errors,
     });
     return;
   }
@@ -68,6 +62,32 @@ app.put("/completed", async (req: Request, res: Response) => {
     msg: "To do mark as completed",
   });
 });
+
+app.patch("/todos/:id/complete", async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { completed } = req.body;
+
+  if (typeof completed !== 'boolean') {
+    return res.status(400).json({ msg: "Invalid completed value" });
+  }
+
+  try {
+    const updatedTodo = await Todo.findByIdAndUpdate(
+      id,
+      { completed },
+      { new: true }
+    );
+
+    if (!updatedTodo) {
+      return res.status(404).json({ msg: "Todo not found" });
+    }
+
+    res.json(updatedTodo);
+  } catch (error) {
+    res.status(500).json({ msg: "Error updating todo", error });
+  }
+});
+
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

@@ -1,21 +1,26 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
-import dotenv from 'dotenv';
-const mongoUri = process.env.MONGODB_URI || '';
+import * as mongoose from "mongoose";
+import * as dotenv from "dotenv";
+dotenv.config();
 
-mongoose.connect(mongoUri);
+const mongoUri = "mongodb+srv://tarunvamsipusarla:kbbLfvzRrXVDW3AY@todo-app.zic7d0j.mongodb.net/todos" || "";
+console.log("MongoDB URI:", mongoUri); // Debugging line
 
-interface ITodo extends Document {
+mongoose.connect(mongoUri)
+  .then(() => console.log('Database connected'))
+  .catch(err => console.error('Database connection error', err));
+
+interface ITodo extends mongoose.Document {
   title: string;
   description: string;
   completed: boolean;
 }
 
-const todoSchema: Schema<ITodo> = new Schema({
+const todoSchema = new mongoose.Schema<ITodo>({
   title: { type: String, required: true },
   description: { type: String, required: true },
-  completed: { type: Boolean, required: true }
+  completed: { type: Boolean, required: true },
 });
 
-const Todo: Model<ITodo> = mongoose.model<ITodo>('Todo', todoSchema);
+const Todo = mongoose.model<ITodo>("Todo", todoSchema);
 
 export { Todo };
