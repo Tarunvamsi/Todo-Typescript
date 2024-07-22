@@ -25,6 +25,7 @@ app.post("/todo", async (req: Request, res: Response) => {
     title: createPayload.title,
     description: createPayload.description,
     completed: false,
+    date: createPayload.date,
   });
 
   res.json({
@@ -67,7 +68,7 @@ app.patch("/todos/:id/complete", async (req: Request, res: Response) => {
   const { id } = req.params;
   const { completed } = req.body;
 
-  if (typeof completed !== 'boolean') {
+  if (typeof completed !== "boolean") {
     return res.status(400).json({ msg: "Invalid completed value" });
   }
 
@@ -87,6 +88,42 @@ app.patch("/todos/:id/complete", async (req: Request, res: Response) => {
     res.status(500).json({ msg: "Error updating todo", error });
   }
 });
+
+app.delete("/todos/:id", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const result = await Todo.findByIdAndDelete(id);
+    if (!result) {
+      return res.status(404).json({ msg: "Todo not found" });
+    }
+    res.json({ msg: "Todo deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ msg: "Error deleting todo", error });
+  }
+});
+
+
+
+app.put("/todos/:id", async(req:Request, res: Response)=>{
+  const { id } = req.params;
+  const { title, description, completed, date } = req.body;
+
+  try {
+    const updatedTodo = await Todo.findByIdAndUpdate(
+      id,
+      { title, description, completed, date },
+      { new: true }
+    );
+
+    if (!updatedTodo) {
+      return res.status(404).json({ msg: "Todo not found" });
+    }
+
+    res.json(updatedTodo);
+  } catch (error) {
+    res.status(500).json({ msg: "Error updating todo", error });
+  }
+})
 
 
 app.listen(3000, () => {

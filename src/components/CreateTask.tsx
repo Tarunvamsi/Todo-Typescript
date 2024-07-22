@@ -1,46 +1,86 @@
-import { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 
-interface CreateTaskProps {
-  onAdd?: () => void; // Optional callback
+// Define the Todo type to match the structure used elsewhere
+interface Todo {
+  _id: string; // Use _id to match the backend schema
+  title: string;
+  description: string;
+  completed: boolean;
+  date?: string; // Optional date field
 }
 
-const CreateTask: React.FC<CreateTaskProps> = ({ onAdd }) => {
+// Update the props to include optional todoToEdit and onEditComplete
+interface CreateTaskProps {
+  onAdd?: () => void;
+  todoToEdit?: Todo | null; // Allow `null` for editing
+  onEditComplete?: () => void; // Optional callback for when editing is complete
+}
+
+const CreateTask: React.FC<CreateTaskProps> = ({ onAdd, todoToEdit, onEditComplete }) => {
   const titleRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLInputElement>(null);
+  const dateRef = useRef<HTMLInputElement>(null);
 
-  // Handle task creation
+  // Populate form fields if editing an existing task
+  useEffect(() => {
+    if (todoToEdit) {
+      titleRef.current!.value = todoToEdit.title;
+      descriptionRef.current!.value = todoToEdit.description;
+      dateRef.current!.value = todoToEdit.date || '';
+    } else {
+      titleRef.current!.value = '';
+      descriptionRef.current!.value = '';
+      dateRef.current!.value = '';
+    }
+  }, [todoToEdit]);
+
   const handleAddTask = async (event: React.FormEvent) => {
-    event.preventDefault(); // Prevent the default form submission
+    event.preventDefault();
 
     const title = titleRef.current?.value;
     const description = descriptionRef.current?.value;
+    const date = dateRef.current?.value;
 
     try {
-      const response = await fetch("http://localhost:3000/todo", {
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title,
-          description,
-          completed: false,
-        }),
-      });
+      if (todoToEdit) {
+        // Editing existing task
+        await fetch(`http://localhost:3000/todos/${todoToEdit._id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title,
+            description,
+            completed: todoToEdit.completed,
+            date,
+          }),
+        });
 
-      if (response.ok) {
-        alert("To do added");
-        if (titleRef.current) titleRef.current.value = "";
-        if (descriptionRef.current) descriptionRef.current.value = "";
-
-        // Notify parent component to refresh todos
-        if (onAdd) onAdd();
+        if (onEditComplete) onEditComplete();
       } else {
-        alert("Failed to add todo");
+        // Adding new task
+        await fetch("http://localhost:3000/todo", {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title,
+            description,
+            completed: false,
+            date,
+          }),
+        });
+
+        if (onAdd) onAdd();
       }
+
+      titleRef.current!.value = "";
+      descriptionRef.current!.value = "";
+      dateRef.current!.value = "";
     } catch (error) {
       console.error('Error:', error);
-      alert('Error adding todo');
     }
   };
 
@@ -59,12 +99,17 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onAdd }) => {
           className="border border-black m-3 p-3"
           placeholder="description"
         />
-
+        <input
+          ref={dateRef}
+          type="date"
+          className="border border-black m-3 p-3"
+          placeholder="due date"
+        />
         <button
           className="bg-blue-500 m-3 p-3 rounded-lg"
           type="submit"
         >
-          Add Task
+          {todoToEdit ? "Update Task" : "Add Task"}
         </button>
       </form>
     </div>

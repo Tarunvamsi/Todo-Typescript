@@ -4,6 +4,7 @@ export const createTodo = z.object({
   title: z.string(),
   description: z.string(),
   completed: z.boolean(),
+  date: z.string(),
 });
 
 export const updateTodo = z.object({

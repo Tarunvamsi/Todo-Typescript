@@ -13,12 +13,14 @@ interface ITodo extends mongoose.Document {
   title: string;
   description: string;
   completed: boolean;
+  date : Date;
 }
 
 const todoSchema = new mongoose.Schema<ITodo>({
   title: { type: String, required: true },
   description: { type: String, required: true },
   completed: { type: Boolean, required: true },
+  date: {type: Date, required: true},
 });
 
 const Todo = mongoose.model<ITodo>("Todo", todoSchema);
