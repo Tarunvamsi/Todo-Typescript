@@ -25,7 +25,8 @@ const Todos: React.FC<TodosProps> = ({ todos, onComplete, onDelete, onEdit }) =>
           <div className="border border-black p-4 w-1/2" key={todo._id}>
             <h1>{todo.title}</h1>
             <h2>{todo.description}</h2>
-            <p>Date: {todo.date}</p>
+            <p>Date: {new Date(todo.date).toLocaleDateString()}</p>
+
             <button
               className={`p-2 rounded-lg ${todo.completed ? "bg-green-600" : "bg-red-600"}`}
               onClick={() => onComplete(todo._id)}
