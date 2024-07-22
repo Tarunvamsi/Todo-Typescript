@@ -86,23 +86,24 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onAdd, todoToEdit, onEditComple
 
   return (
     <div className="pt-32 flex flex-wrap justify-center">
+      <div className="border border-black p-4 m-4 bg-gradient-to-r from-stone-900 to-sky-800 rounded-lg w-3/4 ">
       <form onSubmit={handleAddTask}>
         <input
           ref={titleRef}
           type="text"
-          className="border border-black m-3 p-3"
+          className="border border-black m-3 p-3 rounded-md w-80"
           placeholder="title"
         />
         <input
           ref={descriptionRef}
           type="text"
-          className="border border-black m-3 p-3"
+          className="border border-black m-3 p-3 rounded-md w-96"
           placeholder="description"
         />
         <input
           ref={dateRef}
           type="date"
-          className="border border-black m-3 p-3"
+          className="border border-black m-3 p-3 rounded-md w-48"
           placeholder="due date"
         />
         <button
@@ -112,6 +113,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onAdd, todoToEdit, onEditComple
           {todoToEdit ? "Update Task" : "Add Task"}
         </button>
       </form>
+      </div>
     </div>
   );
 };

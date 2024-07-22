@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import CreateTask from "./CreateTask";
 import Todos from "./Todos";
 
-// Ensure you use _id if this is what the backend uses
 interface Todo {
   _id: string;
   title: string;
@@ -54,9 +53,15 @@ const Body: React.FC = () => {
 
       if (response.ok) {
         const updatedTodo = await response.json();
-        setTodos(todos.map((todo) => (todo._id === _id ? updatedTodo : todo)));
+        setTodos((prevTodos) =>
+          prevTodos.map((todo) =>
+            todo._id === _id ? updatedTodo : todo
+          )
+        );
         calculateSummary(
-          todos.map((todo) => (todo._id === _id ? updatedTodo : todo))
+          todos.map((todo) =>
+            todo._id === _id ? updatedTodo : todo
+          )
         );
       } else {
         const result = await response.json();
@@ -84,7 +89,9 @@ const Body: React.FC = () => {
       if (response.ok) {
         const result = await response.json();
         console.log(result.msg);
-        setTodos(todos.filter((todo) => todo._id !== _id));
+        setTodos((prevTodos) =>
+          prevTodos.filter((todo) => todo._id !== _id)
+        );
       } else {
         const result = await response.json();
         console.error("Failed to delete todo:", result);
@@ -94,6 +101,9 @@ const Body: React.FC = () => {
     }
   };
 
+  const pendingTodos = todos.filter((todo) => !todo.completed);
+  const completedTodos = todos.filter((todo) => todo.completed);
+
   return (
     <div>
       <CreateTask
@@ -101,19 +111,29 @@ const Body: React.FC = () => {
         todoToEdit={todoToEdit}
         onEditComplete={handleEditComplete}
       />
-      <div className="m-5 p-3 border border-black w-1/2">
-        <h3 className="mb-2">Summary</h3>
-        <p>Pending Todos: {pendingCount}</p>
-        <p>Completed Todos: {completedCount}</p>
+      <div className="m-5 p-3 border border-black flex">
+        <div className="w-1/2 pr-2 border-r border-black">
+          <h3 className="mb-2 text-orange-500 font-bold">Pending Todos ({pendingCount})</h3>
+          <Todos
+            todos={pendingTodos}
+            onComplete={handleComplete}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+          />
+        </div>
+        <div className="w-1/2 pl-2">
+          <h3 className="mb-2 text-green-500 font-bold">Completed Todos ({completedCount})</h3>
+          <Todos
+            todos={completedTodos}
+            onComplete={() => {}}
+            onDelete={handleDelete}
+            onEdit={() => {}}
+          />
+        </div>
       </div>
-      <Todos
-        todos={todos}
-        onComplete={handleComplete}
-        onDelete={handleDelete}
-        onEdit={handleEdit}
-      />
     </div>
   );
 };
 
 export default Body;
+
