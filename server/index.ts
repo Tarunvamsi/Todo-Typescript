@@ -4,16 +4,26 @@ import * as types from "./types";
 import dotenv from "dotenv";
 import routes from "./routes/auth";
 import jwt from "jsonwebtoken";
-import User from "./models/User";
+import cors from "cors";
+import { DB_URL, JWT_SECRET, requiredEnvVariables } from "./utils/constants";
+import * as mongoose from "mongoose";
 
+// Load env config
 dotenv.config();
+validateEnvConfig();
 
-const cors = require("cors");
+// Establish DB connection
+connectToDB();
+
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-export const authenticate = (req: Request, res: Response, next: NextFunction) => {
+export const authenticate = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) return res.status(401).json({ msg: "Unauthorized" });
 
@@ -79,35 +89,42 @@ app.put("/completed", authenticate, async (req: Request, res: Response) => {
   });
 });
 
-app.patch("/todos/:id/complete", authenticate, async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { completed } = req.body;
+app.patch(
+  "/todos/:id/complete",
+  authenticate,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { completed } = req.body;
 
-  if (typeof completed !== "boolean") {
-    return res.status(400).json({ msg: "Invalid completed value" });
-  }
-
-  try {
-    const updatedTodo = await Todo.findOneAndUpdate(
-      { _id: id, user: req.body.user },
-      { completed },
-      { new: true }
-    );
-
-    if (!updatedTodo) {
-      return res.status(404).json({ msg: "Todo not found" });
+    if (typeof completed !== "boolean") {
+      return res.status(400).json({ msg: "Invalid completed value" });
     }
 
-    res.json(updatedTodo);
-  } catch (error) {
-    res.status(500).json({ msg: "Error updating todo", error });
+    try {
+      const updatedTodo = await Todo.findOneAndUpdate(
+        { _id: id, user: req.body.user },
+        { completed },
+        { new: true }
+      );
+
+      if (!updatedTodo) {
+        return res.status(404).json({ msg: "Todo not found" });
+      }
+
+      res.json(updatedTodo);
+    } catch (error) {
+      res.status(500).json({ msg: "Error updating todo", error });
+    }
   }
-});
+);
 
 app.delete("/todos/:id", authenticate, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const result = await Todo.findOneAndDelete({ _id: id, user: req.body.user });
+    const result = await Todo.findOneAndDelete({
+      _id: id,
+      user: req.body.user,
+    });
     if (!result) {
       return res.status(404).json({ msg: "Todo not found" });
     }
@@ -139,8 +156,23 @@ app.put("/todos/:id", authenticate, async (req: Request, res: Response) => {
 });
 
 app.use(routes);
-app.use(authenticate)
+app.use(authenticate);
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
+
+function connectToDB() {
+  mongoose
+    .connect(DB_URL)
+    .then(() => console.log("Database connected"))
+    .catch((err) => console.error("Database connection error", err));
+}
+
+function validateEnvConfig() {
+  for (let envVar of requiredEnvVariables) {
+    if (!process.env[envVar]) {
+      throw new Error(`Environment variable ${envVar} is missing.`);
+    }
+  }
+}

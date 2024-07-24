@@ -1,14 +1,17 @@
 import { Router } from "express";
-import express, { Request, Response } from "express";
-import jwt from "jsonwebtoken";
-import { createUser, loginUser } from "../controllers/authController";
+import { Request, Response } from "express";
+import {
+  createUser,
+  loginUser,
+  validateUserLogin,
+} from "../services/AuthService";
 
 const router = Router();
 
 router.post("/signup", createUser);
-router.post("/login", loginUser);
+router.post("/login", validateUserLogin, loginUser);
 router.post("/logout", (req: Request, res: Response) => {
-    res.status(200).json({ msg: "Logged out successfully" });
-  });
+  res.status(200).json({ msg: "Logged out successfully" });
+});
 
 export default router;
