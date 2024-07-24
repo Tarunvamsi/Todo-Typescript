@@ -29,7 +29,7 @@ const Todos: React.FC<TodosProps> = ({ todos, onComplete, onDelete, onEdit }) =>
             <h2 >{todo.description}</h2>
             <p>Date: {new Date(todo.date).toLocaleDateString()}</p>
             <button
-              className={`p-2 m-1 rounded-lg ${todo.completed ? "bg-green-600" : "bg-gray-300"}`}
+              className={`p-2 m-1 rounded-lg ${todo.completed ? "bg-green-400" : "bg-gray-300"}`}
               onClick={() => onComplete(todo._id)}
             >
               {todo.completed ? "Completed" : "Mark as Completed"}

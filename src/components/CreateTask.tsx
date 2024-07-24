@@ -1,27 +1,26 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 
-// Define the Todo type to match the structure used elsewhere
 interface Todo {
-  _id: string; // Use _id to match the backend schema
+  _id: string;
   title: string;
   description: string;
   completed: boolean;
-  date?: string; // Optional date field
+  date?: string;
 }
 
-// Update the props to include optional todoToEdit and onEditComplete
 interface CreateTaskProps {
   onAdd?: () => void;
-  todoToEdit?: Todo | null; // Allow `null` for editing
-  onEditComplete?: () => void; // Optional callback for when editing is complete
+  todoToEdit?: Todo | null;
+  onEditComplete?: () => void;
 }
 
 const CreateTask: React.FC<CreateTaskProps> = ({ onAdd, todoToEdit, onEditComplete }) => {
   const titleRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLInputElement>(null);
   const dateRef = useRef<HTMLInputElement>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  // Populate form fields if editing an existing task
+  const today = new Date().toISOString().split('T')[0];
   useEffect(() => {
     if (todoToEdit) {
       titleRef.current!.value = todoToEdit.title;
@@ -37,13 +36,19 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onAdd, todoToEdit, onEditComple
   const handleAddTask = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    const title = titleRef.current?.value;
-    const description = descriptionRef.current?.value;
+    const title = titleRef.current?.value.trim();
+    const description = descriptionRef.current?.value.trim();
     const date = dateRef.current?.value;
+
+    if (!title || !description || !date) {
+      setError('All fields are required');
+      return;
+    }
+
+    setError(null); // Clear any previous errors
 
     try {
       if (todoToEdit) {
-        // Editing existing task
         await fetch(`http://localhost:3000/todos/${todoToEdit._id}`, {
           method: 'PUT',
           headers: {
@@ -59,7 +64,6 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onAdd, todoToEdit, onEditComple
 
         if (onEditComplete) onEditComplete();
       } else {
-        // Adding new task
         await fetch("http://localhost:3000/todo", {
           method: "POST",
           headers: {
@@ -86,25 +90,26 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onAdd, todoToEdit, onEditComple
 
   return (
     <div className="pt-32 flex flex-wrap justify-center">
-      <div className="border border-black p-4 m-4 bg-gradient-to-r from-stone-900 to-sky-800 rounded-lg w-3/4 ">
       <form onSubmit={handleAddTask}>
+        {error && <p className="text-red-600">{error}</p>}
         <input
           ref={titleRef}
           type="text"
-          className="border border-black m-3 p-3 rounded-md w-80"
+          className="border border-black m-3 p-3"
           placeholder="title"
         />
         <input
           ref={descriptionRef}
           type="text"
-          className="border border-black m-3 p-3 rounded-md w-96"
+          className="border border-black m-3 p-3"
           placeholder="description"
         />
         <input
           ref={dateRef}
           type="date"
-          className="border border-black m-3 p-3 rounded-md w-48"
+          className="border border-black m-3 p-3"
           placeholder="due date"
+          min={today}
         />
         <button
           className="bg-blue-500 m-3 p-3 rounded-lg"
@@ -113,7 +118,6 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onAdd, todoToEdit, onEditComple
           {todoToEdit ? "Update Task" : "Add Task"}
         </button>
       </form>
-      </div>
     </div>
   );
 };

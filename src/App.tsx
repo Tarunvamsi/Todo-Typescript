@@ -9,7 +9,7 @@ function App() {
   return (
     <>
     {/* className="bg-gradient-to-r from-stone-900 to-sky-800 min-h-screen p-4" */}
-    <div >
+    <div>
         <Header />
         <Body />
       </div>
