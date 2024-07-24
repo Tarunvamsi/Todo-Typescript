@@ -1,10 +1,7 @@
 import { Router } from "express";
 import { Request, Response } from "express";
-import {
-  createUser,
-  loginUser,
-  validateUserLogin,
-} from "../services/AuthService";
+import { createUser, loginUser } from "../services/auth";
+import { validateUserLogin } from "../middlewares/auth";
 
 const router = Router();
 
