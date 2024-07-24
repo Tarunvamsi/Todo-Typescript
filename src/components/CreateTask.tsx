@@ -48,11 +48,18 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onAdd, todoToEdit, onEditComple
     setError(null); // Clear any previous errors
 
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError('User is not authenticated');
+        return;
+      }
+
       if (todoToEdit) {
         await fetch(`http://localhost:3000/todos/${todoToEdit._id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
           },
           body: JSON.stringify({
             title,
@@ -68,6 +75,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onAdd, todoToEdit, onEditComple
           method: "POST",
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
           },
           body: JSON.stringify({
             title,

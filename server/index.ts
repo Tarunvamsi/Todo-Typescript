@@ -1,16 +1,32 @@
-import express, { Request, Response } from "express";
-import { Todo } from "./db";
+import express, { NextFunction, Request, Response } from "express";
+import { Todo } from "./models/db";
 import * as types from "./types";
 import dotenv from "dotenv";
+import routes from "./routes/auth";
+import jwt from "jsonwebtoken";
+import User from "./models/User";
 
 dotenv.config();
 
 const cors = require("cors");
 const app = express();
 app.use(express.json());
-app.use(cors({methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT']}));
+app.use(cors());
 
-app.post("/todo", async (req: Request, res: Response) => {
+export const authenticate = (req: Request, res: Response, next: NextFunction) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ msg: "Unauthorized" });
+
+  try {
+    const decoded = jwt.verify(token, "secret") as { user: string };
+    req.body.user = decoded.user;
+    next();
+  } catch (error) {
+    res.status(401).json({ msg: "Unauthorized" });
+  }
+};
+
+app.post("/todo", authenticate, async (req: Request, res: Response) => {
   const createPayload = req.body;
   const parsedPayload = types.createTodo.safeParse(createPayload);
 
@@ -21,28 +37,27 @@ app.post("/todo", async (req: Request, res: Response) => {
     });
     return;
   }
+
   await Todo.create({
-    title: createPayload.title,
-    description: createPayload.description,
-    completed: false,
-    date: createPayload.date,
+    ...parsedPayload.data,
+    user: createPayload.user,
   });
 
   res.json({
-    msg: "To do Created",
+    msg: "Todo Created",
   });
 });
 
-app.get("/todos", async (req: Request, res: Response) => {
+app.get("/todos", authenticate, async (req: Request, res: Response) => {
   try {
-    const todos = await Todo.find();
+    const todos = await Todo.find({ user: req.body.user });
     res.status(200).json(todos);
   } catch (error) {
     res.status(500).json({ msg: "Error fetching todos", error });
   }
 });
 
-app.put("/completed", async (req: Request, res: Response) => {
+app.put("/completed", authenticate, async (req: Request, res: Response) => {
   const updatePayload = req.body;
   const parsedPayload = types.updateTodo.safeParse(updatePayload);
 
@@ -54,17 +69,17 @@ app.put("/completed", async (req: Request, res: Response) => {
     return;
   }
 
-  await Todo.findByIdAndUpdate(
-    parsedPayload.data.id,
+  await Todo.findOneAndUpdate(
+    { _id: parsedPayload.data.id, user: req.body.user },
     { completed: parsedPayload.data.completed },
     { new: true }
   );
   res.json({
-    msg: "To do mark as completed",
+    msg: "Todo marked as completed",
   });
 });
 
-app.patch("/todos/:id/complete", async (req: Request, res: Response) => {
+app.patch("/todos/:id/complete", authenticate, async (req: Request, res: Response) => {
   const { id } = req.params;
   const { completed } = req.body;
 
@@ -73,8 +88,8 @@ app.patch("/todos/:id/complete", async (req: Request, res: Response) => {
   }
 
   try {
-    const updatedTodo = await Todo.findByIdAndUpdate(
-      id,
+    const updatedTodo = await Todo.findOneAndUpdate(
+      { _id: id, user: req.body.user },
       { completed },
       { new: true }
     );
@@ -89,10 +104,10 @@ app.patch("/todos/:id/complete", async (req: Request, res: Response) => {
   }
 });
 
-app.delete("/todos/:id", async (req: Request, res: Response) => {
+app.delete("/todos/:id", authenticate, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const result = await Todo.findByIdAndDelete(id);
+    const result = await Todo.findOneAndDelete({ _id: id, user: req.body.user });
     if (!result) {
       return res.status(404).json({ msg: "Todo not found" });
     }
@@ -102,15 +117,13 @@ app.delete("/todos/:id", async (req: Request, res: Response) => {
   }
 });
 
-
-
-app.put("/todos/:id", async(req:Request, res: Response)=>{
+app.put("/todos/:id", authenticate, async (req: Request, res: Response) => {
   const { id } = req.params;
   const { title, description, completed, date } = req.body;
 
   try {
-    const updatedTodo = await Todo.findByIdAndUpdate(
-      id,
+    const updatedTodo = await Todo.findOneAndUpdate(
+      { _id: id, user: req.body.user },
       { title, description, completed, date },
       { new: true }
     );
@@ -123,8 +136,10 @@ app.put("/todos/:id", async(req:Request, res: Response)=>{
   } catch (error) {
     res.status(500).json({ msg: "Error updating todo", error });
   }
-})
+});
 
+app.use(routes);
+app.use(authenticate)
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

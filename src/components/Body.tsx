@@ -17,8 +17,18 @@ const Body: React.FC = () => {
   const [todoToEdit, setTodoToEdit] = useState<Todo | null>(null);
 
   const fetchTodos = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found");
+      return;
+    }
+  
     try {
-      const response = await fetch("http://localhost:3000/todos");
+      const response = await fetch("http://localhost:3000/todos", {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
       const json = await response.json();
       setTodos(json);
       calculateSummary(json);
@@ -39,6 +49,12 @@ const Body: React.FC = () => {
   }, []);
 
   const handleComplete = async (_id: string) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found");
+      return;
+    }
+  
     try {
       const response = await fetch(
         `http://localhost:3000/todos/${_id}/complete`,
@@ -46,11 +62,12 @@ const Body: React.FC = () => {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
           },
           body: JSON.stringify({ completed: true }),
         }
       );
-
+  
       if (response.ok) {
         const updatedTodo = await response.json();
         setTodos((prevTodos) =>
@@ -82,9 +99,18 @@ const Body: React.FC = () => {
   };
 
   const handleDelete = async (_id: string) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found");
+      return;
+    }
+  
     try {
       const response = await fetch(`http://localhost:3000/todos/${_id}`, {
         method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
       });
       if (response.ok) {
         const result = await response.json();

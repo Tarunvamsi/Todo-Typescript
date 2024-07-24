@@ -14,6 +14,7 @@ interface ITodo extends mongoose.Document {
   description: string;
   completed: boolean;
   date : Date;
+  user: mongoose.Schema.Types.ObjectId;
 }
 
 const todoSchema = new mongoose.Schema<ITodo>({
@@ -21,6 +22,8 @@ const todoSchema = new mongoose.Schema<ITodo>({
   description: { type: String, required: true },
   completed: { type: Boolean, required: true },
   date: {type: Date, required: true},
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  
 });
 
 const Todo = mongoose.model<ITodo>("Todo", todoSchema);
