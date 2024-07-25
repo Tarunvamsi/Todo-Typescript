@@ -1,11 +1,11 @@
 import React from "react";
-import EditIcon from "../icons/EditIcon";
-import DeleteIcon from "../icons/DeleteIcon";
+import EditIcon from "../assets/icons/EditIcon";
+import DeleteIcon from "../assets/icons/DeleteIcon";
 import { Todo } from "./types";
 
 interface TodosProps {
   todos: Todo[];
-  onComplete: (id: string) => void;
+  onComplete: (id: string, isComplete: boolean) => void;
   onDelete: (id: string) => void;
   onEdit: (todo: Todo) => void;
 }
@@ -25,16 +25,14 @@ const Todos: React.FC<TodosProps> = ({
           <div className="border border-black p-4 mb-2" key={todo.id}>
             <h1 className="font-semibold text-lg">{todo.title}</h1>
             <h2>{todo.description}</h2>
-            <p>Date: {todo.dueDate}</p> 
+            <p>Date: {todo.dueDate}</p>
             <button
               className={`p-2 m-1 rounded-lg ${
-                todo.completed
-                  ? "bg-green-500"
-                  : "bg-gray-300"
+                todo.completed ? "bg-green-500" : "bg-gray-300"
               }`}
-              onClick={() => onComplete(todo.id)}
+              onClick={() => onComplete(todo.id, todo.completed)}
             >
-              {todo.completed ? "Completed" : "Mark as Completed"}
+              {todo.completed ? "Move to pending" : "Mark as Completed"}
             </button>
             {todo.completed ? (
               <>

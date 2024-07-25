@@ -2,15 +2,15 @@ import "./index.css";
 import "./App.css";
 import Body from "./components/Body";
 import Header from "./components/Header";
-import Login from "./components/Auth/Login";
-import Signup from "./components/Auth/Signup";
+import Login from "./auth/Login";
+import Signup from "./auth/Signup";
 import {
   BrowserRouter as Router,
   Route,
   Routes,
   Navigate,
 } from "react-router-dom";
-import { AuthProvider, useAuth } from "./components/Auth/authContext"; // Adjust import path if necessary
+import { AuthProvider, useAuth } from "./auth/authContext"; // Adjust import path if necessary
 
 function App() {
   return (

@@ -12,7 +12,6 @@ export const getApiError = (
   let apiError: ApiErrorMessage;
 
   if (e instanceof ZodError) {
-    console.log(JSON.stringify(e));
     apiError = { msg: getZodErrorMsg(e) };
     return { apiError: apiError, status: StatusCodes.BAD_REQUEST };
   }

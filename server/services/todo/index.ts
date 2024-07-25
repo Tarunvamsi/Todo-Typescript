@@ -73,8 +73,8 @@ export const deleteTodo = async (req: Request, res: Response) => {
 };
 
 export const completeTodo = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  await Todo.findByIdAndUpdate(id, { completed: true });
+  const { id, isCompleted } = req.params;
+  await Todo.findByIdAndUpdate(id, { completed: isCompleted });
   res.status(StatusCodes.OK).json({
     msg: "Todo marked as completed",
   });

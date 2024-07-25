@@ -1,7 +1,8 @@
 import React from "react";
-import { useAuth } from "./Auth/authContext";
 import DateTime from "./DateTime";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../utils/constants";
+import { useAuth } from "../auth/authContext";
 
 const Header: React.FC = () => {
   const { isLoggedIn, logout } = useAuth();
@@ -9,7 +10,7 @@ const Header: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:3000/logout", {
+      await fetch(`${BASE_URL}/logout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

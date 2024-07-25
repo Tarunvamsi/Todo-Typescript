@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-
 import { Todo } from "./types";
+import useAddTask from "../hooks/useAddTask ";
 
 interface CreateTaskProps {
   onAdd?: () => void;
@@ -8,86 +8,42 @@ interface CreateTaskProps {
   onEditComplete?: () => void;
 }
 
-const CreateTask: React.FC<CreateTaskProps> = ({ onAdd, todoToEdit, onEditComplete }) => {
+const CreateTask: React.FC<CreateTaskProps> = ({
+  onAdd,
+  todoToEdit,
+  onEditComplete,
+}) => {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [dueDate, setDueDate] = useState<string>("");
-  const [error, setError] = useState<string | null>(null);
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split("T")[0];
+  const { handleAddTask, error } = useAddTask({
+    onAdd,
+    onEditComplete,
+    todoToEdit,
+  });
 
   useEffect(() => {
-    console.log('Todo to Edit:', todoToEdit); // Debugging line
     if (todoToEdit) {
       setTitle(todoToEdit.title);
       setDescription(todoToEdit.description);
-      setDueDate(todoToEdit.dueDate || '');
+      setDueDate(todoToEdit.dueDate ? todoToEdit.dueDate.split('T')[0] : '');
     } else {
       setTitle("");
       setDescription("");
       setDueDate("");
     }
-  }, [todoToEdit]);
+  }, [todoToEdit, onEditComplete]);
 
-  const handleAddTask = async (event: React.FormEvent) => {
+  const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-
-    if (!title || !description || !dueDate) {
-      setError('All fields are required');
-      return;
-    }
-
-    setError(null); 
-
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setError('User is not authenticated');
-        return;
-      }
-
-      const apiUrl = todoToEdit ? `http://localhost:3000/todos/${todoToEdit.id}` : "http://localhost:3000/todos";
-      const method = todoToEdit ? 'PUT' : 'POST';
-      console.log(todoToEdit?.id)
-      const response = await fetch(apiUrl, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          title,
-          description,
-          completed: todoToEdit ? todoToEdit.completed : false,
-          dueDate,
-        }),
-      });
-      console.log("response", response)
-
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        throw new Error(`Failed to ${todoToEdit ? 'update' : 'add'} task: ${response.status} - ${errorMessage}`);
-      }
-
-      if (todoToEdit && onEditComplete) {
-        onEditComplete();
-      } else if (onAdd) {
-        onAdd();
-      }
-
-      setTitle("");
-      setDescription("");
-      setDueDate("");
-
-    } catch (error) {
-      console.error('Error:', error);
-      setError('Failed to add/update task');
-    }
+    handleAddTask(title, description, dueDate);
   };
 
   return (
     <div className="pt-32 flex flex-wrap justify-center">
-      <form onSubmit={handleAddTask}>
+      <form onSubmit={handleSubmit}>
         {error && <p className="text-red-600">{error}</p>}
         <input
           type="text"
@@ -111,10 +67,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onAdd, todoToEdit, onEditComple
           onChange={(e) => setDueDate(e.target.value)}
           min={today}
         />
-        <button
-          className="bg-blue-500 m-3 p-3 rounded-lg"
-          type="submit"
-        >
+        <button className="bg-blue-500 m-3 p-3 rounded-lg" type="submit">
           {todoToEdit ? "Update Task" : "Add Task"}
         </button>
       </form>

@@ -13,7 +13,12 @@ const router = Router();
 
 router.get("/todos", authenticate, getTodos);
 router.post("/todos", authenticate, createTodo);
-router.patch("/todos/:id/completed", authenticate, validTodoId, completeTodo);
+router.patch(
+  "/todos/:id/completed/:isCompleted",
+  authenticate,
+  validTodoId,
+  completeTodo
+);
 router.put("/todos/:id", authenticate, validTodoId, editTodo);
 router.delete("/todos/:id", authenticate, validTodoId, deleteTodo);
 
