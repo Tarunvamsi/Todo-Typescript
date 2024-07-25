@@ -17,7 +17,12 @@ interface TodosProps {
   onEdit: (todo: Todo) => void;
 }
 
-const Todos: React.FC<TodosProps> = ({ todos, onComplete, onDelete, onEdit }) => {
+const Todos: React.FC<TodosProps> = ({
+  todos,
+  onComplete,
+  onDelete,
+  onEdit,
+}) => {
   return (
     <div>
       {todos.length === 0 ? (
@@ -26,10 +31,14 @@ const Todos: React.FC<TodosProps> = ({ todos, onComplete, onDelete, onEdit }) =>
         todos.map((todo) => (
           <div className="border border-black p-4 mb-2" key={todo._id}>
             <h1 className="font-semibold text-lg">{todo.title}</h1>
-            <h2 >{todo.description}</h2>
+            <h2>{todo.description}</h2>
             <p>Date: {new Date(todo.date).toLocaleDateString()}</p>
             <button
-              className={`p-2 m-1 rounded-lg ${todo.completed ? "bg-green-400" : "bg-gray-300"}`}
+              className={`p-2 m-1 rounded-lg ${
+                todo.completed
+                  ? "bg-green-StatusCodes.BAD_REQUEST"
+                  : "bg-gray-300"
+              }`}
               onClick={() => onComplete(todo._id)}
             >
               {todo.completed ? "Completed" : "Mark as Completed"}

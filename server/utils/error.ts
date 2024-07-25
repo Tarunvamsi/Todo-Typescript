@@ -1,6 +1,7 @@
 import { ZodError } from "zod";
 import { ApiErrorMessage } from "./types";
 import { getZodErrorMsg } from "./zod";
+import { StatusCodes } from "http-status-codes";
 
 export const getApiError = (
   e: Error
@@ -12,7 +13,7 @@ export const getApiError = (
 
   if (e instanceof ZodError) {
     apiError = { msg: getZodErrorMsg(e) };
-    return { apiError: apiError, status: 400 };
+    return { apiError: apiError, status: StatusCodes.BAD_REQUEST };
   }
 
   apiError = { msg: "Internal Server error" };

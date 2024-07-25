@@ -1,10 +1,15 @@
 import { Types } from "mongoose";
 import { z } from "zod";
 
-export const createTodoSchema = z.object({
-  title: z.string({ required_error: "Title is required" }),
+export const editTodoSchema = z.object({
+  title: z
+    .string({ required_error: "Title is required" })
+    .min(1, "Title cannot be empty"),
   description: z.string({ required_error: "Description is required" }),
   dueDate: z.string({ required_error: "Duedate is required" }).date(),
+});
+
+export const createTodoSchema = editTodoSchema.extend({
   userId: z.string().refine((val) => {
     return Types.ObjectId.isValid(val);
   }, "Invalid todo Id"),
@@ -25,4 +30,4 @@ export interface todoResponse {
   id: Types.ObjectId;
 }
 
-export type todoListResponse = todoResponse[]
+export type todoListResponse = todoResponse[];

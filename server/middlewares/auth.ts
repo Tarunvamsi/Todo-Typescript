@@ -5,6 +5,7 @@ import { Types } from "mongoose";
 import { loginUserSchema } from "../services/auth/types";
 import User from "../models/User";
 import bcrypt from "bcryptjs";
+import { StatusCodes } from "http-status-codes";
 
 export const authenticate = (
   req: Request,
@@ -12,7 +13,8 @@ export const authenticate = (
   next: NextFunction
 ) => {
   const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ msg: "Unauthorized" });
+  if (!token)
+    return res.status(StatusCodes.UNAUTHORIZED).json({ msg: "Unauthorized" });
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as {
@@ -21,7 +23,7 @@ export const authenticate = (
     req.body.userId = decoded.userId;
     next();
   } catch (error) {
-    res.status(401).json({ msg: "Unauthorized" });
+    res.status(StatusCodes.UNAUTHORIZED).json({ msg: "Unauthorized" });
   }
 };
 
@@ -36,12 +38,14 @@ export const validateUserLogin = async (
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(404).json({ msg: "User not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ msg: "User not found" });
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      return res.status(401).json({ msg: "Incorrect password" });
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ msg: "Incorrect password" });
     }
 
     next();
