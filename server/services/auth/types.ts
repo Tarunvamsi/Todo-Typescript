@@ -1,4 +1,3 @@
-import { Types } from "mongoose";
 import { z } from "zod";
 
 export const loginUserSchema = z.object({

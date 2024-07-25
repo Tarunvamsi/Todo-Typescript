@@ -7,6 +7,7 @@ import cors from "cors";
 import { DB_URL, JWT_SECRET, requiredEnvVariables } from "./utils/constants";
 import { authRouter, todoRouter } from "./routes";
 import mongoose, { Types } from "mongoose";
+import { authenticate } from "./middlewares/auth";
 
 // Load env config
 dotenv.config();
@@ -19,14 +20,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// app.get("/todos", authenticate, async (req: Request, res: Response) => {
-//   try {
-//     const todos = await Todo.find({ user: req.body.user });
-//     res.status(200).json(todos);
-//   } catch (error) {
-//     res.status(500).json({ msg: "Error fetching todos", error });
-//   }
-// });
+
 
 // app.put("/completed", authenticate, async (req: Request, res: Response) => {
 //   const updatePayload = req.body;

@@ -16,3 +16,13 @@ export const updateTodoSchema = z.object({
   }, "Invalid todo Id"),
   completed: z.boolean(),
 });
+
+export interface todoResponse {
+  title: string;
+  description: string;
+  dueDate: Date;
+  completed: boolean;
+  id: Types.ObjectId;
+}
+
+export type todoListResponse = todoResponse[]
