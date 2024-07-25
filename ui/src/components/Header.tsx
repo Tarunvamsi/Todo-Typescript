@@ -1,7 +1,7 @@
-import React from 'react';
-import { useAuth } from '../components/authContext';
-import DateTime from './DateTime';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { useAuth } from "./Auth/authContext";
+import DateTime from "./DateTime";
+import { useNavigate } from "react-router-dom";
 
 const Header: React.FC = () => {
   const { isLoggedIn, logout } = useAuth();
@@ -16,7 +16,7 @@ const Header: React.FC = () => {
         },
       });
       logout();
-      navigate('/login'); // Redirect to login page
+      navigate("/login"); // Redirect to login page
     } catch (error) {
       console.error("Logout failed:", error);
     }
@@ -31,7 +31,9 @@ const Header: React.FC = () => {
           </h1>
         </div>
         <div className="flex items-center space-x-4">
-          <h2 className="text-white"><DateTime /></h2>
+          <h2 className="text-white">
+            <DateTime />
+          </h2>
           {isLoggedIn ? (
             <button
               className="text-white px-4 py-2 rounded"
@@ -42,7 +44,7 @@ const Header: React.FC = () => {
           ) : (
             <button
               className="text-white px-4 py-2 rounded"
-              onClick={() => navigate('/login')}
+              onClick={() => navigate("/login")}
             >
               Login
             </button>

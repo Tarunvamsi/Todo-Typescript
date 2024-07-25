@@ -36,7 +36,9 @@ export const createTodo = async (req: Request, res: Response) => {
 
 export const getTodos = async (req: Request, res: Response) => {
   try {
-    const todos = await Todo.find({ userId: req.body.userId });
+    const todos = await Todo.find({
+      userId: req.body.userId,
+    });
 
     const response: todoListResponse = todos.map((todo) => {
       const todoResponse: todoResponse = {

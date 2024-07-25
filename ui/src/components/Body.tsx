@@ -1,14 +1,7 @@
 import { useState, useEffect } from "react";
 import CreateTask from "./CreateTask";
+import { Todo } from "./types";
 import Todos from "./Todos";
-
-interface Todo {
-  _id: string;
-  title: string;
-  description: string;
-  completed: boolean;
-  date: string;
-}
 
 const Body: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -30,7 +23,8 @@ const Body: React.FC = () => {
         },
       });
       const json = await response.json();
-      setTodos(json);
+      console.log("Fetched Todos:", json); // Debugging line     
+       setTodos(json);
       calculateSummary(json);
     } catch (error) {
       console.error("Error fetching todos:", error);
@@ -45,10 +39,11 @@ const Body: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchTodos();
-  }, []);
+    
+    calculateSummary(todos);
+  },[]);
 
-  const handleComplete = async (_id: string) => {
+  const handleComplete = async (id: string) => {
     const token = localStorage.getItem("token");
     if (!token) {
       console.error("No token found");
@@ -57,7 +52,7 @@ const Body: React.FC = () => {
   
     try {
       const response = await fetch(
-        `http://localhost:3000/todos/${_id}/complete`,
+        `http://localhost:3000/todos/${id}/completed`,
         {
           method: "PATCH",
           headers: {
@@ -72,12 +67,12 @@ const Body: React.FC = () => {
         const updatedTodo = await response.json();
         setTodos((prevTodos) =>
           prevTodos.map((todo) =>
-            todo._id === _id ? updatedTodo : todo
+            todo.id === id ? updatedTodo : todo
           )
         );
         calculateSummary(
           todos.map((todo) =>
-            todo._id === _id ? updatedTodo : todo
+            todo.id === id ? updatedTodo : todo
           )
         );
       } else {
@@ -87,9 +82,11 @@ const Body: React.FC = () => {
     } catch (error) {
       console.error("Error marking todo as completed:", error);
     }
+    fetchTodos();
   };
 
   const handleEdit = (todo: Todo) => {
+    console.log('Editing Todo:', todo);
     setTodoToEdit(todo);
   };
 
@@ -98,7 +95,7 @@ const Body: React.FC = () => {
     fetchTodos();
   };
 
-  const handleDelete = async (_id: string) => {
+  const handleDelete = async (id: string) => {
     const token = localStorage.getItem("token");
     if (!token) {
       console.error("No token found");
@@ -106,7 +103,7 @@ const Body: React.FC = () => {
     }
   
     try {
-      const response = await fetch(`http://localhost:3000/todos/${_id}`, {
+      const response = await fetch(`http://localhost:3000/todos/${id}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -116,7 +113,7 @@ const Body: React.FC = () => {
         const result = await response.json();
         console.log(result.msg);
         setTodos((prevTodos) =>
-          prevTodos.filter((todo) => todo._id !== _id)
+          prevTodos.filter((todo) => todo.id !== id)
         );
       } else {
         const result = await response.json();
@@ -125,6 +122,7 @@ const Body: React.FC = () => {
     } catch (error) {
       console.error("Error deleting todo:", error);
     }
+    fetchTodos();
   };
 
   const pendingTodos = todos.filter((todo) => !todo.completed);
@@ -162,4 +160,3 @@ const Body: React.FC = () => {
 };
 
 export default Body;
-

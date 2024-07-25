@@ -1,11 +1,16 @@
-import './index.css';
-import './App.css';
-import Body from './components/Body';
-import Header from './components/Header';
-import Login from './components/Login';
-import Signup from './components/Signup';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './components/authContext'; // Adjust import path if necessary
+import "./index.css";
+import "./App.css";
+import Body from "./components/Body";
+import Header from "./components/Header";
+import Login from "./components/Auth/Login";
+import Signup from "./components/Auth/Signup";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
+import { AuthProvider, useAuth } from "./components/Auth/authContext"; // Adjust import path if necessary
 
 function App() {
   return (
@@ -14,18 +19,8 @@ function App() {
         <div>
           <Header />
           <Routes>
-            <Route
-              path="/login"
-              element={
-                <LoginWrapper />
-              }
-            />
-            <Route
-              path="/signup"
-              element={
-                <SignupWrapper />
-              }
-            />
+            <Route path="/login" element={<LoginWrapper />} />
+            <Route path="/signup" element={<SignupWrapper />} />
             <Route
               path="/"
               element={
@@ -44,7 +39,7 @@ function App() {
 const LoginWrapper = () => {
   const { isLoggedIn, setToken } = useAuth();
   const handleLogin = (token: string) => {
-    localStorage.setItem('token', token);
+    localStorage.setItem("token", token);
     setToken(token); // Update auth context
   };
 
@@ -54,7 +49,7 @@ const LoginWrapper = () => {
 const SignupWrapper = () => {
   const { isLoggedIn, setToken } = useAuth();
   const handleSignup = (token: string) => {
-    localStorage.setItem('token', token);
+    localStorage.setItem("token", token);
     setToken(token); // Update auth context
   };
 

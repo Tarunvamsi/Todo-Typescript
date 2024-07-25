@@ -1,12 +1,6 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-interface Todo {
-  _id: string;
-  title: string;
-  description: string;
-  completed: boolean;
-  date?: string;
-}
+import { Todo } from "./types";
 
 interface CreateTaskProps {
   onAdd?: () => void;
@@ -15,37 +9,35 @@ interface CreateTaskProps {
 }
 
 const CreateTask: React.FC<CreateTaskProps> = ({ onAdd, todoToEdit, onEditComplete }) => {
-  const titleRef = useRef<HTMLInputElement>(null);
-  const descriptionRef = useRef<HTMLInputElement>(null);
-  const dateRef = useRef<HTMLInputElement>(null);
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [dueDate, setDueDate] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
 
   const today = new Date().toISOString().split('T')[0];
+
   useEffect(() => {
+    console.log('Todo to Edit:', todoToEdit); // Debugging line
     if (todoToEdit) {
-      titleRef.current!.value = todoToEdit.title;
-      descriptionRef.current!.value = todoToEdit.description;
-      dateRef.current!.value = todoToEdit.date || '';
+      setTitle(todoToEdit.title);
+      setDescription(todoToEdit.description);
+      setDueDate(todoToEdit.dueDate || '');
     } else {
-      titleRef.current!.value = '';
-      descriptionRef.current!.value = '';
-      dateRef.current!.value = '';
+      setTitle("");
+      setDescription("");
+      setDueDate("");
     }
   }, [todoToEdit]);
 
   const handleAddTask = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    const title = titleRef.current?.value.trim();
-    const description = descriptionRef.current?.value.trim();
-    const date = dateRef.current?.value;
-
-    if (!title || !description || !date) {
+    if (!title || !description || !dueDate) {
       setError('All fields are required');
       return;
     }
 
-    setError(null); // Clear any previous errors
+    setError(null); 
 
     try {
       const token = localStorage.getItem("token");
@@ -54,45 +46,42 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onAdd, todoToEdit, onEditComple
         return;
       }
 
-      if (todoToEdit) {
-        await fetch(`http://localhost:3000/todos/${todoToEdit._id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            title,
-            description,
-            completed: todoToEdit.completed,
-            date,
-          }),
-        });
+      const apiUrl = todoToEdit ? `http://localhost:3000/todos/${todoToEdit.id}` : "http://localhost:3000/todos";
+      const method = todoToEdit ? 'PUT' : 'POST';
+      console.log(todoToEdit?.id)
+      const response = await fetch(apiUrl, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          completed: todoToEdit ? todoToEdit.completed : false,
+          dueDate,
+        }),
+      });
+      console.log("response", response)
 
-        if (onEditComplete) onEditComplete();
-      } else {
-        await fetch("http://localhost:3000/todo", {
-          method: "POST",
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            title,
-            description,
-            completed: false,
-            date,
-          }),
-        });
-
-        if (onAdd) onAdd();
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(`Failed to ${todoToEdit ? 'update' : 'add'} task: ${response.status} - ${errorMessage}`);
       }
 
-      titleRef.current!.value = "";
-      descriptionRef.current!.value = "";
-      dateRef.current!.value = "";
+      if (todoToEdit && onEditComplete) {
+        onEditComplete();
+      } else if (onAdd) {
+        onAdd();
+      }
+
+      setTitle("");
+      setDescription("");
+      setDueDate("");
+
     } catch (error) {
       console.error('Error:', error);
+      setError('Failed to add/update task');
     }
   };
 
@@ -101,22 +90,25 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onAdd, todoToEdit, onEditComple
       <form onSubmit={handleAddTask}>
         {error && <p className="text-red-600">{error}</p>}
         <input
-          ref={titleRef}
           type="text"
           className="border border-black m-3 p-3"
-          placeholder="title"
+          placeholder="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
         />
         <input
-          ref={descriptionRef}
           type="text"
           className="border border-black m-3 p-3"
-          placeholder="description"
+          placeholder="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
         />
         <input
-          ref={dateRef}
           type="date"
           className="border border-black m-3 p-3"
-          placeholder="due date"
+          placeholder="Due Date"
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
           min={today}
         />
         <button

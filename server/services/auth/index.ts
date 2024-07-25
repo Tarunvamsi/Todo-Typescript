@@ -43,9 +43,13 @@ const loginUser = async (req: Request, res: Response) => {
 
   const user = await User.findOne({ email });
 
-  const token = jwt.sign({ user: user!._id, email: user!.email }, JWT_SECRET, {
-    expiresIn: JWT_EXPIRY,
-  });
+  const token = jwt.sign(
+    { userId: user!._id, email: user!.email },
+    JWT_SECRET,
+    {
+      expiresIn: JWT_EXPIRY,
+    }
+  );
 
   const response: LoginResponse = {
     token,
