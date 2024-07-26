@@ -1,4 +1,5 @@
 import todoRouter from "./todo";
 import authRouter from "./auth";
+import projectRouter from "./project";
 
-export { todoRouter, authRouter };
+export { todoRouter, authRouter, projectRouter };

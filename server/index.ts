@@ -1,8 +1,8 @@
 import express from "express";
-import dotenv, { configDotenv } from "dotenv";
+import { configDotenv } from "dotenv";
 import cors from "cors";
 import { DB_URL, requiredEnvVariables } from "./utils/constants";
-import { authRouter, todoRouter } from "./routes";
+import { authRouter, projectRouter, todoRouter } from "./routes";
 import mongoose from "mongoose";
 
 initialize();
@@ -15,6 +15,7 @@ app.use(cors());
 // Routers
 app.use(authRouter);
 app.use(todoRouter);
+app.use(projectRouter)
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
