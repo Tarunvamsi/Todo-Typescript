@@ -3,7 +3,7 @@ import React from "react";
 const DeleteIcon: React.FC = () => {
   return (
     <svg
-      className="w-6 h-6 text-gray-800 dark:text-red-500"
+      className="w-6 h-6 text-gray-800  dark:text-red-500 hover:text-red-400 "
       aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       width="24"

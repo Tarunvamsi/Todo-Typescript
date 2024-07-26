@@ -16,19 +16,35 @@ const Todos: React.FC<TodosProps> = ({
   onDelete,
   onEdit,
 }) => {
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return "No due date";
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  };
   return (
     <div>
       {todos.length === 0 ? (
-        <p>No todos available</p>
+        <p className="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-white font-semibold text-lg p-4 rounded-lg shadow-md animate-bounce">
+          No todos available !
+        </p>
       ) : (
         todos.map((todo) => (
-          <div className="border border-black p-4 mb-2" key={todo.id}>
+          <div
+            className={`border border-black p-4 mb-2 rounded-lg shadow-md ${
+              todo.completed
+                ? "bg-gradient-to-r from-slate-300 to-green-300 shadow-yellow-600"
+                : "bg-gradient-to-r from-slate-300 to-orange-200 shadow-violet-600"
+            }`}
+            key={todo.id}
+          >
             <h1 className="font-semibold text-lg">{todo.title}</h1>
             <h2>{todo.description}</h2>
-            <p>Date: {todo.dueDate}</p>
+            <p>Due Date: {formatDate(todo.dueDate)}</p>
             <button
               className={`p-2 m-1 rounded-lg ${
-                todo.completed ? "bg-green-500" : "bg-gray-300"
+                todo.completed
+                  ? "bg-orange-300 hover:bg-orange-400"
+                  : "bg-green-300 hover:bg-green-400"
               }`}
               onClick={() => onComplete(todo.id, todo.completed)}
             >
@@ -37,7 +53,7 @@ const Todos: React.FC<TodosProps> = ({
             {todo.completed ? (
               <>
                 <button
-                  className="p-2 rounded-lg  m-1"
+                  className="p-2 rounded-lg m-1"
                   onClick={() => onDelete(todo.id)}
                 >
                   <DeleteIcon />
@@ -46,13 +62,13 @@ const Todos: React.FC<TodosProps> = ({
             ) : (
               <>
                 <button
-                  className="p-2 m-2 rounded-lg "
+                  className="p-2 m-2 rounded-lg"
                   onClick={() => onEdit(todo)}
                 >
                   <EditIcon />
                 </button>
                 <button
-                  className="p-2 rounded-lg "
+                  className="p-2 rounded-lg"
                   onClick={() => onDelete(todo.id)}
                 >
                   <DeleteIcon />

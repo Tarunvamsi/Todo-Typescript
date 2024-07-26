@@ -33,7 +33,8 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSubmit, isSignup }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto p-6 mt-36 bg-white rounded-lg shadow-lg">
+    <form onSubmit={handleSubmit} className="max-w-md mx-auto p-6 mt-48 bg-white rounded-lg shadow-red-500 shadow-md">
+      <h2 className='font-bold ml-28 mb-3 text-blue-500 text-2xl'>Welcome User !</h2>
       {isSignup && (
         <div className="mb-4">
           <input
@@ -69,7 +70,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSubmit, isSignup }) => {
       >
         {isSignup ? 'Signup' : 'Login'}
       </button>
-      {isSignup ? <Link to='/login'><p className='m-4'>Already user? Login</p></Link> : <Link to='/signup'><p className='m-4'> New User? Signup</p></Link>}
+      {isSignup ? <Link to='/login'><p className='m-4 hover:text-green-600'>Already user? Login</p></Link> : <Link to='/signup'><p className='m-4 hover:text-green-700'> New User? Signup</p></Link>}
       {error && <p className="mt-4 text-red-600 text-center">{error}</p>}
     </form>
   );

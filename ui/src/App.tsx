@@ -16,7 +16,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <div>
+        <div className="bg-gradient-to-r from-stone-900 to-sky-800 min-h-screen flex flex-col">
           <Header />
           <Routes>
             <Route path="/login" element={<LoginWrapper />} />
