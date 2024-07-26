@@ -1,7 +1,8 @@
 import { Octokit } from "octokit";
 
+const GITHUB_GIST_TOKEN = import.meta.env.VITE_GITHUB_GIST_TOKEN;
 export const octokit = new Octokit({
-  auth: "",
+  auth: GITHUB_GIST_TOKEN,
 });
 
 export const createSecretGist = async (content: string) => {

@@ -34,7 +34,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSubmit, isSignup }) => {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-md mx-auto p-6 mt-48 bg-white rounded-lg shadow-red-500 shadow-md">
-      <h2 className='font-bold ml-28 mb-3 text-blue-500 text-2xl'>Welcome User !</h2>
+      <h2 className='font-bold ml-28 mb-3 text-blue-500 text-2xl hover:text-red-600 animate-bounce animate-thrice'>Welcome User!</h2>
       {isSignup && (
         <div className="mb-4">
           <input

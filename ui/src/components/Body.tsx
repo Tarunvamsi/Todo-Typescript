@@ -11,6 +11,7 @@ import {
 } from "../utils/exportToMarkdown"; // Import the utility function
 import Download from "../assets/icons/Download";
 import { createSecretGist } from "../utils/octokit";
+import ExportIcon from "../assets/icons/ExportIcon";
 
 const Body: React.FC = () => {
   const { todos, pendingCount, completedCount, fetchTodos } = useTodos();
@@ -60,22 +61,27 @@ const Body: React.FC = () => {
       />
       {deleteError && <p className="text-red-500">{deleteError}</p>}
       {completeError && <p className="text-red-500">{completeError}</p>}
-      <div className="m-6 ml-[1350px]">
-        <button
-          onClick={handleExport}
-          className="bg-blue-500 text-white px-4 py-2 rounded flex items-center space-x-2 hover:bg-blue-400"
-        >
-          <span>Summary</span>
-          <Download />
-        </button>
-        <button
-          onClick={handleExportAsGist}
-          className="bg-blue-500 text-white px-4 py-2 rounded flex items-center space-x-2 hover:bg-blue-400"
-        >
-          <span>Export as gist</span>
-          <Download />
-        </button>
+      <div className="flex flex-wrap justify-end ">
+        <div className="m-5">
+          <button
+            onClick={handleExport}
+            className="bg-blue-500 text-white px-4 py-2 rounded flex items-center space-x-2 hover:bg-blue-400"
+          >
+            <span>Summary</span>
+            <Download />
+          </button>
+        </div>
+        <div className="m-5">
+          <button
+            onClick={handleExportAsGist}
+            className="bg-blue-500 text-white px-4 py-2 rounded flex items-center space-x-2 hover:bg-blue-400"
+          >
+            <span>Export as gist</span>
+            <ExportIcon />
+          </button>
+        </div>
       </div>
+
       <div className="m-5 p-3 border border-gray-500 shadow-md flex">
         <div className="w-1/2 pr-2 border-r border-white">
           <div className="flex items-center mb-2">
