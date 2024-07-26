@@ -30,51 +30,45 @@ const Todos: React.FC<TodosProps> = ({
       ) : (
         todos.map((todo) => (
           <div
-            className={`border border-black p-4 mb-2 rounded-lg shadow-md ${
+            className={` px-4 py-2 mb-2 rounded-lg shadow-md ${
               todo.completed
-                ? "bg-gradient-to-r from-slate-300 to-green-300 shadow-yellow-600"
-                : "bg-gradient-to-r from-slate-300 to-orange-200 shadow-violet-600"
+                ? "bg-gradient-to-r from-emerald-600 to-indigo-900"
+                : "bg-gradient-to-r from-pink-600 to-indigo-900"
             }`}
             key={todo.id}
           >
-            <h1 className="font-semibold text-lg">{todo.title}</h1>
-            <h2>{todo.description}</h2>
-            <p>Due Date: {formatDate(todo.dueDate)}</p>
-            <button
-              className={`p-2 m-1 rounded-lg ${
-                todo.completed
-                  ? "bg-orange-300 hover:bg-orange-400"
-                  : "bg-green-300 hover:bg-green-400"
-              }`}
-              onClick={() => onComplete(todo.id, todo.completed)}
-            >
-              {todo.completed ? "Move to pending" : "Mark as Completed"}
-            </button>
-            {todo.completed ? (
-              <>
+            <div className="w-full flex justify-between">
+              <div className="text-white flex flex-col justify-between">
+                <h1 className="font-semibold text-lg">{todo.title}</h1>
+                <h2>{todo.description}</h2>
+                <p>Due Date: {formatDate(todo.dueDate)}</p>
+              </div>
+
+              <div className="flex flex-col gap-2">
                 <button
-                  className="p-2 rounded-lg m-1"
-                  onClick={() => onDelete(todo.id)}
+                  className={`p-2 m-1 rounded-lg ${
+                    todo.completed
+                      ? "bg-gray-300 hover:bg-white hover:text-orange-500"
+                      : "bg-gray-300 hover:bg-white hover:text-green-500"
+                  }`}
+                  onClick={() => onComplete(todo.id, todo.completed)}
                 >
-                  <DeleteIcon />
+                  {todo.completed ? "Undo" : "Done"}
                 </button>
-              </>
-            ) : (
-              <>
-                <button
-                  className="p-2 m-2 rounded-lg"
-                  onClick={() => onEdit(todo)}
-                >
-                  <EditIcon />
-                </button>
-                <button
-                  className="p-2 rounded-lg"
-                  onClick={() => onDelete(todo.id)}
-                >
-                  <DeleteIcon />
-                </button>
-              </>
-            )}
+                <div className="flex gap-4 flex-wrap">
+                  <>
+                    {!todo.completed && (
+                      <button onClick={() => onEdit(todo)}>
+                        <EditIcon />
+                      </button>
+                    )}
+                    <button onClick={() => onDelete(todo.id)}>
+                      <DeleteIcon />
+                    </button>
+                  </>
+                </div>
+              </div>
+            </div>
           </div>
         ))
       )}

@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { Todo } from "../components/types";
 import { BASE_URL } from "../utils/constants";
+import { useParams } from "react-router";
 
 const useTodos = () => {
+  const { projectId } = useParams();
+
   const [todos, setTodos] = useState<Todo[]>([]);
   const [pendingCount, setPendingCount] = useState(0);
   const [completedCount, setCompletedCount] = useState(0);
@@ -22,7 +25,7 @@ const useTodos = () => {
     }
 
     try {
-      const response = await fetch(`${BASE_URL}/todos`, {
+      const response = await fetch(`${BASE_URL}/projects/${projectId}/todos`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

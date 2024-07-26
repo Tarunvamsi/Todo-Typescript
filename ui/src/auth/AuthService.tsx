@@ -1,8 +1,12 @@
+import { toast } from "react-toastify";
 import { BASE_URL } from "../utils/constants";
 import { ErrorResponse, ZodErrorDetail } from "./types";
 
 const parseErrorMessage = (errors?: ZodErrorDetail[]): string => {
-  if (!errors) return "Invalid Credentials";
+  if (!errors) {
+    toast.info("Invalid Credentials", { autoClose: 3000 });
+    return "Invalid Credentials";
+  }
   return errors.map((err) => err.message).join(", ");
 };
 
@@ -12,6 +16,7 @@ export const signup = async (
   username: string
 ) => {
   const response = await fetch(`${BASE_URL}/signup`, {
+    
     method: "POST",
     headers: {
       "Content-Type": "application/json",

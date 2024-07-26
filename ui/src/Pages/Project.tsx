@@ -1,19 +1,23 @@
 import React, { useEffect, useState } from "react";
-import CreateTask from "./CreateTask";
-import { Todo } from "./types";
-import Todos from "./Todos";
+import CreateTask from "../components/CreateTask";
+import { Project as IProject, Todo } from "../components/types";
+import Todos from "../components/Todos";
 import useTodos from "../hooks/useTodos";
 import useDeleteTodo from "../hooks/useDeleteTodo";
 import useCompleteTodo from "../hooks/useCompleteTodo";
 import {
   downloadMarkdownFile,
   generateMarkdown,
-} from "../utils/exportToMarkdown"; // Import the utility function
+} from "../utils/exportToMarkdown";
 import Download from "../assets/icons/Download";
 import { createSecretGist } from "../utils/octokit";
 import ExportIcon from "../assets/icons/ExportIcon";
+import { useLocation } from "react-router";
 
-const Body: React.FC = () => {
+const Project: React.FC = () => {
+  const location = useLocation();
+  const project = location.state as IProject;
+
   const { todos, pendingCount, completedCount, fetchTodos } = useTodos();
   const { handleDelete, error: deleteError } = useDeleteTodo();
   const { handleComplete, error: completeError } = useCompleteTodo();
@@ -43,47 +47,66 @@ const Body: React.FC = () => {
   };
 
   const handleExport = () => {
-    downloadMarkdownFile("Todo's Summary", todos);
+    downloadMarkdownFile(`${project.title} Summary`, todos);
   };
 
   const handleExportAsGist = async () => {
-    const content = generateMarkdown("Project 1", todos);
+    const content = generateMarkdown(project.title, todos);
     const gistUrl = await createSecretGist(content);
     window.open(gistUrl, "_blank");
   };
 
+  const projectCreatedAt = new Date(project.createdAt).toLocaleDateString(
+    "en-US",
+    {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }
+  );
+
   return (
-    <div>
+    <div className="mt-28">
+      <div className="flex items-center justify-center">
+        <div className="m-2 p-2 text-center">
+          <h1 className="text-white font-bold text-3xl">{project.title}</h1>
+          <h2 className="text-gray-300 font-semibold">
+            Created on: {projectCreatedAt}
+          </h2>
+        </div>
+        <div className="flex flex-wrap justify-end ">
+          <div className="m-5">
+            <button
+              onClick={handleExport}
+              className="bg-blue-500 text-white px-4 py-2 rounded flex items-center space-x-2 hover:bg-blue-400"
+            >
+              <span>Summary</span>
+              <Download />
+            </button>
+          </div>
+          <div className="m-5">
+            <button
+              onClick={handleExportAsGist}
+              className="bg-blue-500 text-white px-4 py-2 rounded flex items-center space-x-2 hover:bg-blue-400"
+            >
+              <span>Export as gist</span>
+              <ExportIcon />
+            </button>
+          </div>
+        </div>
+      </div>
       <CreateTask
         onAdd={fetchTodos}
         todoToEdit={todoToEdit}
         onEditComplete={handleEditComplete}
       />
+
       {deleteError && <p className="text-red-500">{deleteError}</p>}
       {completeError && <p className="text-red-500">{completeError}</p>}
-      <div className="flex flex-wrap justify-end ">
-        <div className="m-5">
-          <button
-            onClick={handleExport}
-            className="bg-blue-500 text-white px-4 py-2 rounded flex items-center space-x-2 hover:bg-blue-400"
-          >
-            <span>Summary</span>
-            <Download />
-          </button>
-        </div>
-        <div className="m-5">
-          <button
-            onClick={handleExportAsGist}
-            className="bg-blue-500 text-white px-4 py-2 rounded flex items-center space-x-2 hover:bg-blue-400"
-          >
-            <span>Export as gist</span>
-            <ExportIcon />
-          </button>
-        </div>
-      </div>
 
-      <div className="m-5 p-3 border border-gray-500 shadow-md flex">
-        <div className="w-1/2 pr-2 border-r border-white">
+      <div className="m-5 p-3 flex gap-4">
+        <div className="w-1/2 py-2 px-4  shadow-white shadow-sm border-0 rounded">
           <div className="flex items-center mb-2">
             <h3 className="text-orange-600 font-bold text-2xl flex-grow">
               Pending Todos ({pendingCount})
@@ -104,7 +127,7 @@ const Body: React.FC = () => {
             />
           </div>
         </div>
-        <div className="w-1/2 pl-2">
+        <div className="w-1/2 py-2 px-4  shadow-white shadow-sm border-0 rounded">
           <h3 className="mb-2 text-green-500 font-bold text-2xl">
             Completed Todos ({completedCount})
           </h3>
@@ -122,4 +145,4 @@ const Body: React.FC = () => {
   );
 };
 
-export default Body;
+export default Project;

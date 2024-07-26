@@ -2,7 +2,7 @@ import { useState } from "react";
 import { BASE_URL } from "../utils/constants";
 import { toast } from "react-toastify";
 
-const useDeleteTodo = () => {
+const useDeleteProject = () => {
   const [error, setError] = useState<string | null>(null);
 
   const handleDelete = async (id: string) => {
@@ -21,15 +21,15 @@ const useDeleteTodo = () => {
       });
 
       if (response.ok) {
-        console.log("Todo deleted successfully");
-        toast.info("Todo deleted successfully!",{autoClose:2000,closeOnClick:true} )
+        console.log("Project deleted successfully");
+        toast.info("Project deleted successfully!",{autoClose:2000,closeOnClick:true} )
       } else {
         const result = await response.json();
-        console.error("Failed to delete todo:", result);
+        console.error("Failed to delete Project:", result);
         setError(result.message);
       }
     } catch (error) {
-      console.error("Error deleting todo:", error);
+      console.error("Error deleting Project:", error);
       setError((error as Error).message);
     }
   };
@@ -37,4 +37,4 @@ const useDeleteTodo = () => {
   return { handleDelete, error };
 };
 
-export default useDeleteTodo;
+export default useDeleteProject;

@@ -102,4 +102,4 @@ Open your browser and go to `http://localhost:5173` to view the app.
 
 ### 5. Recorded Video
 
-For a walkthrough of the Application , check out the video: [View on YouTube](https://youtu.be/eq--e58-66I)
+For a walkthrough of the Application , check out the video: [View on YouTube](https://www.youtube.com/watch?v=yN5TduKOPMQ)
