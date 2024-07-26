@@ -22,6 +22,10 @@ export const updateTodoSchema = z.object({
   completed: z.boolean(),
 });
 
+export const completeTodoSchema = z.object({
+  completed: z.boolean({required_error: "Completed field is required"})
+})
+
 export interface todoResponse {
   title: string;
   description: string;

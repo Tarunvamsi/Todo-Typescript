@@ -7,19 +7,15 @@ import {
   editTodo,
 } from "../services/todo";
 import { authenticate } from "../middlewares/auth";
-import { validTodoId } from "../middlewares/todo";
+import { validateProjectId } from "../middlewares/project";
+import { canAccessTodo } from "../middlewares/permission";
 
 const router = Router();
 
-router.get("/todos", authenticate, getTodos);
-router.post("/todos", authenticate, createTodo);
-router.patch(
-  "/todos/:id/completed/:isCompleted",
-  authenticate,
-  validTodoId,
-  completeTodo
-);
-router.put("/todos/:id", authenticate, validTodoId, editTodo);
-router.delete("/todos/:id", authenticate, validTodoId, deleteTodo);
+router.get("/projects/:projectId/todos", authenticate,validateProjectId ,getTodos);
+router.post("/projects/:projectId/todos", authenticate, validateProjectId,createTodo);
+router.patch('/todos/:todoId', authenticate, canAccessTodo, completeTodo);
+router.put("/todos/:todoId", authenticate, canAccessTodo, editTodo);
+router.delete("/todos/:todoId", authenticate, canAccessTodo, deleteTodo);
 
 export default router;

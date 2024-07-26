@@ -1,5 +1,6 @@
 import { Todo } from "../../models/Todo";
 import {
+  completeTodoSchema,
   createTodoSchema,
   editTodoSchema,
   todoListResponse,
@@ -9,15 +10,16 @@ import { Request, Response } from "express";
 import { getApiError } from "../../utils/error";
 import { Types } from "mongoose";
 import { StatusCodes } from "http-status-codes";
-import { error } from "console";
 
 export const createTodo = async (req: Request, res: Response) => {
   try {
+    const { projectId } = req.params;
     const createTodoRequest = createTodoSchema.parse(req.body);
 
-    const { _id, title, description, completed, dueDate } = await Todo.create(
-      createTodoRequest
-    );
+    const { _id, title, description, completed, dueDate } = await Todo.create({
+        ...createTodoRequest,
+        projectId,
+    });
 
     const response: todoResponse = {
       id: _id as Types.ObjectId,
@@ -36,8 +38,9 @@ export const createTodo = async (req: Request, res: Response) => {
 
 export const getTodos = async (req: Request, res: Response) => {
   try {
+    const {projectId} = req.params
     const todos = await Todo.find({
-      userId: req.body.userId,
+      projectId: projectId,
     });
 
     const response: todoListResponse = todos.map((todo) => {
@@ -59,8 +62,8 @@ export const getTodos = async (req: Request, res: Response) => {
 
 export const deleteTodo = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const result = await Todo.findByIdAndDelete(id);
+    const { todoId } = req.params;
+    const result = await Todo.findByIdAndDelete(todoId);
     if (!result) {
       return res.status(StatusCodes.NOT_FOUND).json({ msg: "Todo not found" });
     }
@@ -73,20 +76,26 @@ export const deleteTodo = async (req: Request, res: Response) => {
 };
 
 export const completeTodo = async (req: Request, res: Response) => {
-  const { id, isCompleted } = req.params;
-  await Todo.findByIdAndUpdate(id, { completed: isCompleted });
-  res.status(StatusCodes.OK).json({
-    msg: "Todo marked as completed",
-  });
+    try {
+        const { todoId } = req.params;
+        const { completed } = completeTodoSchema.parse(req.body);
+        await Todo.findByIdAndUpdate(todoId, { completed });
+        res.status(StatusCodes.OK).json({
+            msg: `Todo marked as ${completed ? 'complete' : 'incomplete'}`,
+        });
+    } catch (e) {
+        const { status, apiError } = getApiError(e as Error);
+        res.status(status).json(apiError);
+    }
 };
 
 export const editTodo = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { todoId } = req.params;
   try {
     const { title, description, dueDate } = editTodoSchema.parse(req.body);
 
     const updatedTodo = await Todo.findByIdAndUpdate(
-      id,
+      todoId,
       {
         title,
         description,
