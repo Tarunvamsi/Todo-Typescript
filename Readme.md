@@ -103,3 +103,20 @@ Start by cloning the repository:
 ### 4. Access the Application
 
 Open your browser and go to `http://localhost:5173` to view the app.
+
+### Screenshots
+- Signup page
+  
+![alt text](assets/signup.png)
+
+- Projects list page
+  
+![alt text](assets/projects.png)
+
+- Todos list page
+  
+![alt text](assets/todos.png)
+
+- Private Gist (Project Summary)
+  
+![alt text](assets/private_gist.png)
