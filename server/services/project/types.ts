@@ -7,7 +7,7 @@ export const createProjectSchema = z.object({
         .min(1, 'Title cannot be empty'),
     userId: z.string().refine((val) => {
         return Types.ObjectId.isValid(val);
-    }, 'Invalid todo Id'),
+    }, 'Invalid User Id'),
 });
 
 export interface projectResponse {

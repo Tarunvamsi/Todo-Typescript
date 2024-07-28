@@ -60,6 +60,7 @@ const loginUser = async (req: Request, res: Response) => {
 
 const logoutUser = (req: Request, res: Response) => {
   res.status(StatusCodes.OK).json({ msg: "Logged out successfully" });
+
 };
 
 export { createUser, loginUser, logoutUser };

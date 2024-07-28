@@ -10,7 +10,10 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
-import { AuthProvider, useAuth } from "./auth/authContext"; // Adjust import path if necessary
+import { AuthProvider, useAuth } from "./auth/authContext";
+import ProjectBody from "./components/ProjectBody";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
@@ -21,6 +24,9 @@ function App() {
           <Routes>
             <Route path="/login" element={<LoginWrapper />} />
             <Route path="/signup" element={<SignupWrapper />} />
+            <Route path="/projects" element={<ProjectBody />} />
+            <Route path="/projects/:projectId" element={<Body />} />
+
             <Route
               path="/"
               element={
@@ -31,6 +37,7 @@ function App() {
             />
           </Routes>
         </div>
+        <ToastContainer />
       </Router>
     </AuthProvider>
   );
@@ -43,7 +50,11 @@ const LoginWrapper = () => {
     setToken(token); // Update auth context
   };
 
-  return isLoggedIn ? <Navigate to="/" /> : <Login onLogin={handleLogin} />;
+  return isLoggedIn ? (
+    <Navigate to="/projects" />
+  ) : (
+    <Login onLogin={handleLogin} />
+  );
 };
 
 const SignupWrapper = () => {
@@ -53,7 +64,11 @@ const SignupWrapper = () => {
     setToken(token); // Update auth context
   };
 
-  return isLoggedIn ? <Navigate to="/" /> : <Signup onSignup={handleSignup} />;
+  return isLoggedIn ? (
+    <Navigate to="/projects" />
+  ) : (
+    <Signup onSignup={handleSignup} />
+  );
 };
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {

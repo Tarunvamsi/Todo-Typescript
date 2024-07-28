@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CreateTask from "./CreateTask";
-import { Todo } from "./types";
+import { Project, Todo } from "./types";
 import Todos from "./Todos";
 import useTodos from "../hooks/useTodos";
 import useDeleteTodo from "../hooks/useDeleteTodo";
@@ -8,12 +8,16 @@ import useCompleteTodo from "../hooks/useCompleteTodo";
 import {
   downloadMarkdownFile,
   generateMarkdown,
-} from "../utils/exportToMarkdown"; // Import the utility function
+} from "../utils/exportToMarkdown";
 import Download from "../assets/icons/Download";
 import { createSecretGist } from "../utils/octokit";
 import ExportIcon from "../assets/icons/ExportIcon";
+import { useLocation } from "react-router";
 
 const Body: React.FC = () => {
+  const location = useLocation();
+  const project = location.state as Project;
+
   const { todos, pendingCount, completedCount, fetchTodos } = useTodos();
   const { handleDelete, error: deleteError } = useDeleteTodo();
   const { handleComplete, error: completeError } = useCompleteTodo();
@@ -43,14 +47,21 @@ const Body: React.FC = () => {
   };
 
   const handleExport = () => {
-    downloadMarkdownFile("Todo's Summary", todos);
+    downloadMarkdownFile(`${project.title} Summary`, todos);
   };
 
   const handleExportAsGist = async () => {
-    const content = generateMarkdown("Project 1", todos);
+    const content = generateMarkdown(project.title, todos);
     const gistUrl = await createSecretGist(content);
     window.open(gistUrl, "_blank");
   };
+
+  const projectCreatedAt = new Date(project.createdAt).toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 
   return (
     <div>
@@ -59,6 +70,13 @@ const Body: React.FC = () => {
         todoToEdit={todoToEdit}
         onEditComplete={handleEditComplete}
       />
+     <div className="flex items-center justify-center">
+      <div className="m-2 p-2 text-center">
+        <h1 className="text-white font-bold text-3xl">{project.title}</h1>
+        <h2 className="text-gray-300 font-semibold">Created on: {projectCreatedAt}</h2>
+      </div>
+    </div>
+
       {deleteError && <p className="text-red-500">{deleteError}</p>}
       {completeError && <p className="text-red-500">{completeError}</p>}
       <div className="flex flex-wrap justify-end ">

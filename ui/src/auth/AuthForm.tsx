@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 interface AuthFormProps {
   onSubmit: (email: string, password: string, username?: string) => void;
@@ -19,12 +20,14 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSubmit, isSignup }) => {
     const username = isSignup ? usernameRef.current?.value.trim() : undefined;
 
     if (!email || !password || (isSignup && !username)) {
-      setError("All fields are required");
+      toast.error("All fields are required");
+      // setError("All fields are required");
       return;
     }
 
     if (!/\S+@\S+\.\S+/.test(email)) {
-      setError("Invalid email format");
+      // setError("Invalid email format");
+      toast.warning("Invalid email format")
       return;
     }
 
@@ -33,7 +36,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSubmit, isSignup }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto p-6 mt-48 bg-white rounded-lg shadow-red-500 shadow-md">
+    <form onSubmit={handleSubmit} className="max-w-md mx-auto p-6 mt-48 bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600 rounded-lg shadow-red-500 shadow-md">
       <h2 className='font-bold ml-28 mb-3 text-blue-500 text-2xl hover:text-red-600 animate-bounce animate-thrice'>Welcome User!</h2>
       {isSignup && (
         <div className="mb-4">
@@ -41,7 +44,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSubmit, isSignup }) => {
             ref={usernameRef}
             type="text"
             placeholder="Username"
-            required
+            
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
           />
         </div>
@@ -49,9 +52,9 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSubmit, isSignup }) => {
       <div className="mb-4">
         <input
           ref={emailRef}
-          type="email"
+          type="text"
           placeholder="Email"
-          required
+       
           className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
         />
       </div>
@@ -60,7 +63,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSubmit, isSignup }) => {
           ref={passwordRef}
           type="password"
           placeholder="Password"
-          required
+       
           className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
         />
       </div>
@@ -70,7 +73,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSubmit, isSignup }) => {
       >
         {isSignup ? 'Signup' : 'Login'}
       </button>
-      {isSignup ? <Link to='/login'><p className='m-4 hover:text-green-600'>Already user? Login</p></Link> : <Link to='/signup'><p className='m-4 hover:text-green-700'> New User? Signup</p></Link>}
+      {isSignup ? <Link to='/login'><p className='m-4 text-white hover:text-green-600'>Already user? Login</p></Link> : <Link to='/signup'><p className='m-4 text-white hover:text-green-700'> New User? Signup</p></Link>}
       {error && <p className="mt-4 text-red-600 text-center">{error}</p>}
     </form>
   );

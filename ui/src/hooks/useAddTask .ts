@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Todo } from "../components/types";
 import { BASE_URL } from "../utils/constants";
+import { useParams } from "react-router";
+import { toast } from "react-toastify";
 
 interface UseAddTaskProps {
   onAdd?: () => void;
@@ -10,6 +12,7 @@ interface UseAddTaskProps {
 
 const useAddTask = ({ onAdd, onEditComplete, todoToEdit }: UseAddTaskProps) => {
   const [error, setError] = useState<string | null>(null);
+  const { projectId } = useParams();
 
   const handleAddTask = async (
     title: string,
@@ -32,7 +35,7 @@ const useAddTask = ({ onAdd, onEditComplete, todoToEdit }: UseAddTaskProps) => {
 
       const apiUrl = todoToEdit
         ? `${BASE_URL}/todos/${todoToEdit.id}`
-        : `${BASE_URL}/todos`;
+        : `${BASE_URL}/projects/${projectId}/todos`;
       const method = todoToEdit ? "PUT" : "POST";
 
       const response = await fetch(apiUrl, {
@@ -51,11 +54,9 @@ const useAddTask = ({ onAdd, onEditComplete, todoToEdit }: UseAddTaskProps) => {
 
       if (!response.ok) {
         const errorMessage = await response.text();
-        throw new Error(
-          `Failed to ${todoToEdit ? "update" : "add"} task: ${
-            response.status
-          } - ${errorMessage}`
-        );
+        toast.error(errorMessage);
+      }else{
+        toast.success("To do added Successfully")
       }
 
       if (todoToEdit && onEditComplete) {

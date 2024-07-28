@@ -43,7 +43,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({
 
   return (
     <div  >
-      <div className="className= p-4 m-3 mt-24  w-3/4 ml-44  flex flex-wrap  bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600  shadow-red-900 shadow-md  rounded-lg">
+      <div className="className= p-4 m-3 mt-28  w-3/4 ml-44  flex flex-wrap  bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600  shadow-red-900 shadow-md  rounded-lg">
       <form onSubmit={handleSubmit}>
         {error && <p className="text-red-600">{error}</p>}
         <input

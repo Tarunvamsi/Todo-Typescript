@@ -32,7 +32,7 @@ const Header: React.FC = () => {
       </h1>
     </div>
     <div className="flex items-center space-x-4">
-      <h2 className="text-white font-medium">
+      <h2 className="text-white font-medium border border-white m-2 p-2 rounded-md hover:bg-blue-800">
         <DateTime />
       </h2>
       {isLoggedIn ? (
