@@ -2,6 +2,10 @@
 
 Welcome to the Todo-Typescript project! This README will guide you through setting up and running the project.
 
+## Demo
+
+For a walkthrough of the Application , check out the recorded demo video: [View on YouTube](https://www.youtube.com/watch?v=yN5TduKOPMQ)
+
 ## Getting Started
 
 ### 1. Clone the Repository
@@ -99,7 +103,3 @@ Start by cloning the repository:
 ### 4. Access the Application
 
 Open your browser and go to `http://localhost:5173` to view the app.
-
-### 5. Recorded Video
-
-For a walkthrough of the Application , check out the video: [View on YouTube](https://www.youtube.com/watch?v=yN5TduKOPMQ)
