@@ -55,7 +55,7 @@ export const editProject = async (req: Request, res: Response) => {
         project = await Project.findByIdAndUpdate(
             projectId,
             { title: editProjectRequest.title },
-            { new: true }
+            { new: false }
         );
         const response: projectResponse = {
             id: project!._id as Types.ObjectId,

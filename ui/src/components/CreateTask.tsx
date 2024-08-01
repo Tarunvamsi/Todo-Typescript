@@ -65,7 +65,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({
             placeholder="Due Date"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
-            min={today}
+            // min={today}
           />
           <button className="bg-blue-500 m-3 p-3 rounded-lg w-24" type="submit">
             {todoToEdit ? "Update Task" : "Add Task"}

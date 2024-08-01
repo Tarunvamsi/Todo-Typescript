@@ -3,7 +3,7 @@ export interface Todo {
   title: string;
   description: string;
   completed: boolean;
-  dueDate?: string;
+  dueDate?: string ;
 }
 
 export interface Project {

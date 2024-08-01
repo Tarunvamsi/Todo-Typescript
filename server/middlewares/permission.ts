@@ -49,7 +49,7 @@ export const canAccessProject = async (
 
     if (!Types.ObjectId.isValid(projectId)) {
         const error: ApiErrorMessage = {
-            msg: 'Invalid todo Id',
+            msg: 'Invalid Project Id',
         };
         return res.status(StatusCodes.BAD_REQUEST).json(error);
     }
@@ -58,7 +58,7 @@ export const canAccessProject = async (
     if (!project) {
         return res
             .status(StatusCodes.NOT_FOUND)
-            .json({ msg: 'Todo not found' });
+            .json({ msg: 'Project not found' });
     }
 
     next()

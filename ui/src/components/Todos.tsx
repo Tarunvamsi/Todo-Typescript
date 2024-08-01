@@ -21,6 +21,18 @@ const Todos: React.FC<TodosProps> = ({
     const date = new Date(dateString);
     return date.toLocaleDateString();
   };
+
+  const today = new Date();
+
+  const checkDate = (dueDate: string) => {
+    const dateCompared = new Date(dueDate);
+    console.log("duedate", dateCompared);
+    console.log("today", today);
+    const dateCheck = dateCompared < today;
+    console.log(dateCheck);
+    return dateCheck;
+  };
+
   return (
     <div>
       {todos.length === 0 ? (
@@ -31,10 +43,12 @@ const Todos: React.FC<TodosProps> = ({
         todos.map((todo) => (
           <div
             className={` px-4 py-2 mb-2 rounded-lg shadow-md ${
-              todo.completed
-                ? "bg-gradient-to-r from-emerald-600 to-indigo-900"
-                : "bg-gradient-to-r from-pink-600 to-indigo-900"
-            }`}
+              !todo.completed && checkDate(todo.dueDate!) 
+                ? "bg-gradient-to-r from-pink-600 to-indigo-900"
+                :(!todo.completed && !checkDate(todo.dueDate!) 
+               ? "bg-gradient-to-r from-red-600 to-indigo-900" :  "bg-gradient-to-r from-green-600 to-indigo-900")
+                
+            } `}
             key={todo.id}
           >
             <div className="w-full flex justify-between">
