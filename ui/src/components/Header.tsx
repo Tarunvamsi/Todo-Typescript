@@ -14,14 +14,38 @@ const Header: React.FC = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
       logout();
-      navigate("/login");
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
+
+  const handleLogoutAllDevices = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/logout-all`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+
+      if (response.ok) {
+        logout(); 
+        navigate("/login");
+        alert("Session terminated: logged out of all devices");
+      } else {
+        throw new Error("Failed to logout from all devices");
+      }
+    } catch (error) {
+      console.error("Logout from all devices failed:", error);
+    }
+  };
+  
+
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-gray-900 via-gray-800 to-blue-600 p-4 shadow-lg">
@@ -49,6 +73,14 @@ const Header: React.FC = () => {
               >
                 Logout
               </button>
+
+              <button
+                className="bg-red-600 text-white px-4 py-2 rounded-md shadow hover:bg-gray-200 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-300"
+                onClick={handleLogoutAllDevices}
+              >
+                Logout All Devices
+              </button>
+
             </>
           ) : (
             <button

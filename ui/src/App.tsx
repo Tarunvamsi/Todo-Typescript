@@ -17,29 +17,21 @@ import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <Router>
+      <AuthProvider>
         <div className="bg-gradient-to-r from-stone-900 to-sky-800 min-h-screen flex flex-col">
           <Header />
           <Routes>
             <Route path="/login" element={<LoginWrapper />} />
             <Route path="/signup" element={<SignupWrapper />} />
-            <Route path="/projects" element={<Dashboard />} />
-            <Route path="/projects/:projectId" element={<Project />} />
-
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Project />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/projects" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/projects/:projectId" element={<ProtectedRoute><Project /></ProtectedRoute>} />
+            <Route path="/" element={<Navigate to="/projects" />} />
           </Routes>
         </div>
         <ToastContainer />
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 

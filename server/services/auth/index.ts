@@ -5,6 +5,8 @@ import { createUserSchema, LoginResponse, loginUserSchema } from "./types";
 import { JWT_EXPIRY, JWT_SECRET } from "../../utils/constants";
 import { getApiError } from "../../utils/error";
 import { StatusCodes } from "http-status-codes";
+import Token from "../../models/Token";
+import { Types } from "mongoose";
 
 const createUser = async (req: Request, res: Response) => {
   try {
@@ -31,6 +33,8 @@ const createUser = async (req: Request, res: Response) => {
     const response: LoginResponse = {
       token,
     };
+
+    await Token.create({ userId: user._id, token });
     res.status(StatusCodes.CREATED).json(response);
   } catch (error) {
     const { status, apiError } = getApiError(error as Error);
@@ -54,13 +58,27 @@ const loginUser = async (req: Request, res: Response) => {
   const response: LoginResponse = {
     token,
   };
+  await Token.create({ userId: user!._id, token });
 
   res.status(StatusCodes.OK).json(response);
 };
 
-const logoutUser = (req: Request, res: Response) => {
-  res.status(StatusCodes.OK).json({ msg: "Logged out successfully" });
+const logoutUser = async (req: Request, res: Response) => {
+  const token = req.headers.authorization?.split(" ")[1];
 
+  await Token.findOneAndDelete({ token });
+
+  res.status(StatusCodes.OK).json({ msg: "Logged out successfully" });
 };
 
-export { createUser, loginUser, logoutUser };
+const logoutAllDevices = async (req: Request, res: Response) => {
+  const userId = req.body.userId as Types.ObjectId;
+  const x = await Token.deleteMany({ userId });
+  console.log(x, userId);
+
+  res
+    .status(StatusCodes.OK)
+    .json({ msg: "Logged out of all devices successfully" });
+};
+
+export { createUser, loginUser, logoutUser, logoutAllDevices };

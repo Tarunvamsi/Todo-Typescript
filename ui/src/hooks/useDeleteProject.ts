@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { BASE_URL } from "../utils/constants";
 import { toast } from "react-toastify";
+import { useApi } from "./useApi";
 
 const useDeleteProject = () => {
   const [error, setError] = useState<string | null>(null);
+  const { fetch } = useApi();
 
   const handleDelete = async (id: string) => {
     const token = localStorage.getItem("token");
@@ -22,7 +24,10 @@ const useDeleteProject = () => {
 
       if (response.ok) {
         console.log("Project deleted successfully");
-        toast.info("Project deleted successfully!",{autoClose:2000,closeOnClick:true} )
+        toast.info("Project deleted successfully!", {
+          autoClose: 2000,
+          closeOnClick: true,
+        });
       } else {
         const result = await response.json();
         console.error("Failed to delete Project:", result);

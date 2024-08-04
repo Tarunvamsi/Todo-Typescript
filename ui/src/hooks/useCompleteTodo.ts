@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { BASE_URL } from "../utils/constants";
 import { toast } from "react-toastify";
+import { useApi } from "./useApi";
 
 const useCompleteTodo = () => {
   const [error, setError] = useState<string | null>(null);
+  const { fetch } = useApi();
 
   const handleComplete = async (id: string, isCompleted: boolean) => {
     const token = localStorage.getItem("token");
@@ -24,7 +26,10 @@ const useCompleteTodo = () => {
 
       if (response.ok) {
         console.log("Completed todo");
-        toast.info("Todo status updated !",{closeOnClick:true,autoClose:2000})
+        toast.info("Todo status updated !", {
+          closeOnClick: true,
+          autoClose: 2000,
+        });
       } else {
         const result = await response.json();
         console.error("Failed to mark todo as completed:", result);

@@ -6,8 +6,9 @@ import { loginUserSchema } from "../services/auth/types";
 import User from "../models/User";
 import bcrypt from "bcryptjs";
 import { StatusCodes } from "http-status-codes";
+import Token from "../models/Token";
 
-export const authenticate = (
+export const authenticate =async  (
   req: Request,
   res: Response,
   next: NextFunction
@@ -20,6 +21,12 @@ export const authenticate = (
     const decoded = jwt.verify(token, JWT_SECRET) as {
       userId: Types.ObjectId;
     };
+
+    const tokenExists = await Token.findOne({ token });
+    if (!tokenExists) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({ msg: "Unauthorized" });
+    }
+
     req.body.userId = decoded.userId;
     next();
   } catch (error) {

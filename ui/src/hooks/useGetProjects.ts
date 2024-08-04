@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Project, Todo } from "../components/types";
 import { BASE_URL } from "../utils/constants";
+import { useApi } from "./useApi";
 
 const useGetProjects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
+  const { fetch } = useApi();
   const fetchProjects = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -18,8 +20,7 @@ const useGetProjects = () => {
         },
       });
 
-      const projectResponse = await response.json();
-      console.log("projectResponse", projectResponse);
+      const projectResponse = await response?.json();
       setProjects(() => projectResponse);
     } catch (error) {
       console.error("Error fetching Projects:", error);

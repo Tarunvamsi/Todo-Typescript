@@ -3,6 +3,7 @@ import { Todo } from "../components/types";
 import { BASE_URL } from "../utils/constants";
 import { useParams } from "react-router";
 import { toast } from "react-toastify";
+import { useApi } from "./useApi";
 
 interface UseAddTaskProps {
   onAdd?: () => void;
@@ -13,6 +14,7 @@ interface UseAddTaskProps {
 const useAddTask = ({ onAdd, onEditComplete, todoToEdit }: UseAddTaskProps) => {
   const [error, setError] = useState<string | null>(null);
   const { projectId } = useParams();
+  const { fetch } = useApi();
 
   const handleAddTask = async (
     title: string,
@@ -55,8 +57,8 @@ const useAddTask = ({ onAdd, onEditComplete, todoToEdit }: UseAddTaskProps) => {
       if (!response.ok) {
         const errorMessage = await response.text();
         toast.error(errorMessage);
-      }else{
-        toast.success("To do added Successfully")
+      } else {
+        toast.success("To do added Successfully");
       }
 
       if (todoToEdit && onEditComplete) {

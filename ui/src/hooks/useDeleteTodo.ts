@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { BASE_URL } from "../utils/constants";
 import { toast } from "react-toastify";
+import { useApi } from "./useApi";
 
 const useDeleteTodo = () => {
   const [error, setError] = useState<string | null>(null);
+  const { fetch } = useApi();
 
   const handleDelete = async (id: string) => {
     const token = localStorage.getItem("token");

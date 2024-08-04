@@ -2,6 +2,7 @@ import { useState } from "react";
 import { BASE_URL } from "../utils/constants";
 import { toast } from "react-toastify";
 import { Project } from "../components/types";
+import { useApi } from "./useApi";
 
 interface UseAddProjectProps {
   onAdd: () => void;
@@ -9,12 +10,20 @@ interface UseAddProjectProps {
   projectToEdit?: Project | null;
 }
 
-const useAddProject = ({ onAdd, onEditComplete, projectToEdit }: UseAddProjectProps) => {
+const useAddProject = ({
+  onAdd,
+  onEditComplete,
+  projectToEdit,
+}: UseAddProjectProps) => {
   const [error, setError] = useState<string | null>(null);
+  const { fetch } = useApi();
 
   const handleAddProject = async (title: string) => {
     if (!title) {
-      toast.error("Please enter your project title!", { autoClose: 3000, closeOnClick: true });
+      toast.error("Please enter your project title!", {
+        autoClose: 3000,
+        closeOnClick: true,
+      });
       return;
     }
 
@@ -43,11 +52,20 @@ const useAddProject = ({ onAdd, onEditComplete, projectToEdit }: UseAddProjectPr
         }),
       });
 
+      if (response === null) {
+        throw new Error("Unauthorized");
+      }
+
       if (response.ok) {
-        toast.success(projectToEdit ? "Project updated successfully" : "Project added successfully", {
-          position: "bottom-right",
-          autoClose: 3000,
-        });
+        toast.success(
+          projectToEdit
+            ? "Project updated successfully"
+            : "Project added successfully",
+          {
+            position: "bottom-right",
+            autoClose: 3000,
+          }
+        );
 
         if (projectToEdit && onEditComplete) {
           onEditComplete();
@@ -60,7 +78,11 @@ const useAddProject = ({ onAdd, onEditComplete, projectToEdit }: UseAddProjectPr
           position: "bottom-right",
           autoClose: 3000,
         });
-        throw new Error(`Failed to ${projectToEdit ? "update" : "add"} project: ${response.status} - ${errorMessage}`);
+        throw new Error(
+          `Failed to ${projectToEdit ? "update" : "add"} project: ${
+            response.status
+          } - ${errorMessage}`
+        );
       }
     } catch (error) {
       console.error("Error:", error);
