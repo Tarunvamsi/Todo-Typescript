@@ -1,51 +1,45 @@
-import React from "react";
+// Header.tsx
+import React, { useState } from "react";
 import DateTime from "./DateTime";
 import { Link, useNavigate } from "react-router-dom";
 import { BASE_URL } from "../utils/constants";
 import { useAuth } from "../auth/authContext";
+import Modal from "./Modal";
+import { toast } from "react-toastify";
 
 const Header: React.FC = () => {
   const { isLoggedIn, logout } = useAuth();
   const navigate = useNavigate();
+  const [isModalOpen, setModalOpen] = useState(false);
 
-  const handleLogout = async () => {
+  const handleLogout = async (logoutAll = false) => {
+    const endpoint = logoutAll ? "/logout-all" : "/logout";
     try {
-      await fetch(`${BASE_URL}/logout`, {
+      const response = await fetch(`${BASE_URL}${endpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      logout();
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
-
-  const handleLogoutAllDevices = async () => {
-    try {
-      const response = await fetch(`${BASE_URL}/logout-all`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
       if (response.ok) {
-        logout(); 
-        navigate("/login");
-        alert("Session terminated: logged out of all devices");
+        logout();
+        toast.done("Logged out !")
+        if (logoutAll) {
+          navigate("/login");
+          // alert("Session terminated: logged out of all devices");
+          toast.info("logged out of all devices")
+        }
       } else {
-        throw new Error("Failed to logout from all devices");
+        throw new Error("Logout failed");
       }
     } catch (error) {
-      console.error("Logout from all devices failed:", error);
+      console.error("Logout failed:", error);
+    } finally {
+      setModalOpen(false);
     }
   };
-  
-
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-gray-900 via-gray-800 to-blue-600 p-4 shadow-lg">
@@ -69,18 +63,10 @@ const Header: React.FC = () => {
               </Link>
               <button
                 className="bg-rose-500 text-white px-4 py-2 rounded-md shadow hover:bg-gray-200 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-300"
-                onClick={handleLogout}
+                onClick={() => setModalOpen(true)}
               >
                 Logout
               </button>
-
-              <button
-                className="bg-red-600 text-white px-4 py-2 rounded-md shadow hover:bg-gray-200 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-300"
-                onClick={handleLogoutAllDevices}
-              >
-                Logout All Devices
-              </button>
-
             </>
           ) : (
             <button
@@ -92,6 +78,11 @@ const Header: React.FC = () => {
           )}
         </div>
       </div>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        onConfirm={handleLogout}
+      />
     </div>
   );
 };

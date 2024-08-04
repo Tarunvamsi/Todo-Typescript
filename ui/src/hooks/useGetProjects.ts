@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Project, Todo } from "../components/types";
+import { Project } from "../components/types";
 import { BASE_URL } from "../utils/constants";
 import { useApi } from "./useApi";
 

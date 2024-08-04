@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import { useAuth } from "../auth/authContext";
 
 export const useApi = () => {
@@ -7,6 +8,7 @@ export const useApi = () => {
     const response = await fetch(input, init);
     if (response.status === 401) {
       logout();
+      toast.error("Session expired. You have been logged out.");
     }
 
     return response;
