@@ -4,9 +4,12 @@ import CreateProject from "../components/CreateProject";
 import ProjectList from "../components/ProjectList";
 import { Project } from "../components/types";
 import Dropdown from "../components/Dropdown";
+import useDeleteProject from "../hooks/useDeleteProject";
 
 const Dashboard: React.FC = () => {
   const { projects, fetchProjects } = useGetProjects();
+  const { handleDelete, error: deleteError } = useDeleteProject();
+
   const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>(projects);
 
@@ -16,6 +19,11 @@ const Dashboard: React.FC = () => {
 
   const handleEdit = (project: Project) => {
     setProjectToEdit(project);
+  };
+
+  const handleDeleteProject = async (id: string) => {
+    await handleDelete(id);
+    fetchProjects();
   };
 
   const handleEditComplete = () => {
@@ -61,7 +69,7 @@ const Dashboard: React.FC = () => {
       <div className="text-white">
         <div className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600 shadow-gray-300 shadow-sm m-4 p-4 rounded-md max-w-4xl mx-auto">
           <Dropdown options={options} handleSearch={handleSearch} />
-          <ProjectList projects={filteredProjects} onEdit={handleEdit} />
+          <ProjectList projects={filteredProjects} onEdit={handleEdit} onDelete={handleDeleteProject} />
         </div>
       </div>
     </div>

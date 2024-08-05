@@ -15,7 +15,7 @@ const useDeleteProject = () => {
     }
 
     try {
-      const response = await fetch(`${BASE_URL}/todos/${id}`, {
+      const response = await fetch(`${BASE_URL}/projects/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

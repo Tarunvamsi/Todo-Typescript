@@ -90,3 +90,19 @@ export const getProjects = async (req: Request, res: Response) => {
     res.status(status).json(apiError);
   }
 };
+
+export const deleteProject = async(req : Request , res : Response) => {
+  try {
+    const { projectId } = req.params;
+    const result = await Project.findByIdAndDelete(projectId);
+    if (!result) {
+      return res.status(StatusCodes.NOT_FOUND).json({ msg: "Project not found" });
+    }
+    res.status(StatusCodes.OK).json({ msg: "Project deleted successfully" });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ msg: "Error deleting Project", error });
+  }
+  
+}

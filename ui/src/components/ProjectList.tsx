@@ -1,15 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import { Project } from "./types";
 import { useNavigate } from "react-router";
 import EditIcon from "../assets/icons/EditIcon";
+import DeleteIcon from "../assets/icons/DeleteIcon";
+import DeleteModal from "../utils/DeleteModal";
 
 interface ProjectListProps {
   projects: Project[];
   onEdit: (project: Project) => void;
+  onDelete: (id: string) => void;
 }
 
-const ProjectList: React.FC<ProjectListProps> = ({ projects = [], onEdit }) => {
+const ProjectList: React.FC<ProjectListProps> = ({ projects = [], onEdit, onDelete }) => {
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
+
+  const handleDeleteClick = (id: string) => {
+    setProjectToDelete(id);
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (projectToDelete) {
+      onDelete(projectToDelete);
+      setProjectToDelete(null);
+    }
+  };
 
   return (
     <div>
@@ -34,11 +51,20 @@ const ProjectList: React.FC<ProjectListProps> = ({ projects = [], onEdit }) => {
                 >
                   <EditIcon />
                 </button>
+                <button onClick={() => handleDeleteClick(project.id)}>
+                  <DeleteIcon />
+                </button>
               </div>
             </div>
           ))}
         </div>
       </section>
+
+      <DeleteModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 };

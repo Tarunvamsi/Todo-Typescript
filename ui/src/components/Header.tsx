@@ -4,7 +4,7 @@ import DateTime from "./DateTime";
 import { Link, useNavigate } from "react-router-dom";
 import { BASE_URL } from "../utils/constants";
 import { useAuth } from "../auth/authContext";
-import Modal from "./Modal";
+import Modal from "../utils/Modal";
 import { toast } from "react-toastify";
 
 const Header: React.FC = () => {
