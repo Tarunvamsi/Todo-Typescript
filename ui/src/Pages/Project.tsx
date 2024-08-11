@@ -13,6 +13,7 @@ import Download from "../assets/icons/Download";
 import { createSecretGist } from "../utils/octokit";
 import ExportIcon from "../assets/icons/ExportIcon";
 import { useLocation } from "react-router";
+import TodosDoughnutChart from "../utils/TodosDoughnutChart";
 
 const Project: React.FC = () => {
   const location = useLocation();
@@ -68,8 +69,8 @@ const Project: React.FC = () => {
 
   return (
     <div className="mt-28">
-      <div className="flex items-center justify-center">
-        <div className="m-2 p-2 text-center">
+      <div className="flex items-center justify-evenly">
+        <div className="m-2 p-2 text-center -mt-10 ">
           <h1 className="text-white font-bold text-3xl">{project.title}</h1>
           <h2 className="text-gray-300 font-semibold">
             Created on: {projectCreatedAt}
@@ -94,8 +95,18 @@ const Project: React.FC = () => {
               <ExportIcon />
             </button>
           </div>
+          <div>
+          {todos.length > 0 && (
+        <div className=" flex justify-center">
+          <TodosDoughnutChart pendingCount={pendingCount} completedCount={completedCount} />
+        </div>
+      )}
+      </div>
         </div>
       </div>
+
+      
+
       <CreateTask
         onAdd={fetchTodos}
         todoToEdit={todoToEdit}
@@ -106,7 +117,7 @@ const Project: React.FC = () => {
       {completeError && <p className="text-red-500">{completeError}</p>}
 
       <div className="m-5 p-3 flex gap-4">
-        <div className="w-1/2 py-2 px-4  shadow-white shadow-sm border-0 rounded">
+        <div className="w-1/2 py-2 px-4 shadow-white shadow-sm border-0 rounded">
           <div className="flex items-center mb-2">
             <h3 className="text-orange-600 font-bold text-2xl flex-grow">
               Pending Todos ({pendingCount})
@@ -127,7 +138,7 @@ const Project: React.FC = () => {
             />
           </div>
         </div>
-        <div className="w-1/2 py-2 px-4  shadow-white shadow-sm border-0 rounded">
+        <div className="w-1/2 py-2 px-4 shadow-white shadow-sm border-0 rounded">
           <h3 className="mb-2 text-green-500 font-bold text-2xl">
             Completed Todos ({completedCount})
           </h3>
